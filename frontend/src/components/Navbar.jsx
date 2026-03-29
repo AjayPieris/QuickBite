@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-// Fixed navbar: transparent → blur+dark on scroll, mobile hamburger menu
+// Fixed navbar with scroll blur, mobile menu, profile dropdown
 
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -16,20 +16,19 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
 
-  // Hide navbar on landing page hero (show after scroll)
-  const isLanding = location.pathname === '/welcome'
-
-  // Listen for scroll to change navbar style
+  // Track scroll for glass effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile menu on route change
+  // Close menus on route change
   useEffect(() => {
-    setMobileOpen(false)
-    setProfileOpen(false)
+    setTimeout(() => {
+      setMobileOpen(false)
+      setProfileOpen(false)
+    }, 0)
   }, [location])
 
   const handleLogout = () => {
@@ -37,86 +36,93 @@ export default function Navbar() {
     navigate('/login')
   }
 
-  // Navigation links based on user role
-  const navLinks = user ? [
-    { to: '/menu', label: 'Menu' },
-    { to: '/orders', label: 'Orders' },
-    ...(user.role === 'admin' ? [{ to: '/admin', label: 'Dashboard' }] : []),
-  ] : [
-    { to: '/welcome', label: 'Home' },
-  ]
+  // Don't show navbar on login/register pages
+  const hideNavbar = ['/login', '/register'].includes(location.pathname)
+  if (hideNavbar) return null
 
-  // Check if link is active
+  const navLinks = user
+    ? [
+        { to: '/menu', label: 'Menu', icon: '🍽' },
+        { to: '/orders', label: 'Orders', icon: '📦' },
+        ...(user.role === 'admin' ? [{ to: '/admin', label: 'Dashboard', icon: '📊' }] : []),
+      ]
+    : [{ to: '/welcome', label: 'Home', icon: '🏠' }]
+
   const isActive = (path) => location.pathname === path
 
   return (
     <>
-      {/* ── Main Navbar ── */}
       <motion.nav
-        initial={{ y: -100 }}
+        initial={{ y: -80 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl'
+            ? 'bg-[#0a0a0a]/90 backdrop-blur-2xl border-b border-white/[0.06] shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
             : 'bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-18">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-[72px]">
 
-            {/* ── Logo ── */}
-            <Link to={user ? '/menu' : '/welcome'} className="flex items-center gap-2 group">
-              <span className="text-2xl">🍽</span>
-              <span className="text-xl font-bold gradient-text group-hover:opacity-80 transition-opacity">
+            {/* Logo */}
+            <Link to={user ? '/menu' : '/welcome'} className="flex items-center gap-2.5 group shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center shadow-lg shadow-[#f97316]/20">
+                <span className="text-base">🍽</span>
+              </div>
+              <span className="text-lg font-bold gradient-text tracking-tight hidden sm:block">
                 QuickBite
               </span>
             </Link>
 
-            {/* ── Desktop Nav Links ── */}
-            <div className="hidden md:flex items-center gap-1">
-              {navLinks.map(link => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300 ${
-                    isActive(link.to)
-                      ? 'text-[#f97316]'
-                      : 'text-[#9ca3af] hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                  {/* Active indicator underline */}
-                  {isActive(link.to) && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-to-r from-[#f97316] to-[#fbbf24] rounded-full"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              ))}
+            {/* Center Nav Links (Desktop) */}
+            <div className="hidden md:flex items-center">
+              <div className="flex items-center gap-1 bg-white/[0.03] rounded-2xl p-1.5 border border-white/[0.06]">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className={`relative px-5 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 ${
+                      isActive(link.to)
+                        ? 'text-white'
+                        : 'text-[#777] hover:text-white'
+                    }`}
+                  >
+                    {isActive(link.to) && (
+                      <motion.div
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-white/[0.08] rounded-xl border border-white/[0.08]"
+                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <span className="text-sm">{link.icon}</span>
+                      {link.label}
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            {/* ── Right Side Actions ── */}
-            <div className="flex items-center gap-3">
+            {/* Right Actions */}
+            <div className="flex items-center gap-2 shrink-0">
 
-              {/* Cart Button */}
+              {/* Cart */}
               {user && (
-                <Link to="/cart" className="relative p-2 rounded-xl hover:bg-white/5 transition-colors">
-                  <motion.div
-                    animate={cartPulse ? { scale: [1, 1.3, 1] } : {}}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <svg className="w-6 h-6 text-[#9ca3af] hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                <Link
+                  to="/cart"
+                  className="relative w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] transition-all"
+                >
+                  <motion.div animate={cartPulse ? { scale: [1, 1.3, 1] } : {}} transition={{ duration: 0.35 }}>
+                    <svg className="w-[18px] h-[18px] text-[#999]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                     </svg>
                   </motion.div>
                   {totalItems > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-[#f97316] text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                      className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-[#f97316] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-[#f97316]/30"
                     >
                       {totalItems}
                     </motion.span>
@@ -124,54 +130,49 @@ export default function Navbar() {
                 </Link>
               )}
 
-              {/* Profile Dropdown (Desktop) */}
+              {/* Profile / Auth */}
               {user ? (
                 <div className="relative hidden md:block">
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
-                    className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-2.5 h-10 pl-1.5 pr-3 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] transition-all"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center text-sm font-bold overflow-hidden ring-2 ring-[#f97316]/30">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center text-xs font-bold overflow-hidden">
                       {user.profile_image_url ? (
                         <img src={user.profile_image_url} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        user.name?.charAt(0).toUpperCase()
+                        <span className="text-white">{user.name?.charAt(0).toUpperCase()}</span>
                       )}
                     </div>
-                    <svg className={`w-4 h-4 text-[#9ca3af] transition-transform duration-300 ${profileOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <span className="text-[13px] text-[#ccc] font-medium max-w-[80px] truncate">{user.name?.split(' ')[0]}</span>
+                    <svg className={`w-3.5 h-3.5 text-[#666] transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
 
-                  {/* Dropdown Menu */}
                   <AnimatePresence>
                     {profileOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-56 glass rounded-xl overflow-hidden shadow-2xl"
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-60 bg-[#161616] rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/50 overflow-hidden"
                       >
-                        <div className="p-3 border-b border-white/5">
-                          <p className="text-sm font-semibold text-white">{user.name}</p>
-                          <p className="text-xs text-[#9ca3af]">{user.email}</p>
+                        <div className="p-4 border-b border-white/[0.06]">
+                          <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+                          <p className="text-[11px] text-[#666] truncate">{user.email}</p>
                         </div>
-                        <div className="py-1">
-                          <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                            Profile
+                        <div className="p-1.5">
+                          <Link to="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-[#999] hover:text-white hover:bg-white/[0.05] transition-all">
+                            <span className="text-sm">👤</span> Profile
                           </Link>
-                          <Link to="/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V19.5a2.25 2.25 0 0 0 2.25 2.25h.75" /></svg>
-                            My Orders
+                          <Link to="/orders" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-[#999] hover:text-white hover:bg-white/[0.05] transition-all">
+                            <span className="text-sm">📋</span> My Orders
                           </Link>
-                          <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
-                            Logout
+                          <div className="my-1 border-t border-white/[0.05]" />
+                          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-red-400/80 hover:text-red-400 hover:bg-red-500/[0.06] transition-all">
+                            <span className="text-sm">🚪</span> Logout
                           </button>
                         </div>
                       </motion.div>
@@ -180,33 +181,24 @@ export default function Navbar() {
                 </div>
               ) : (
                 <div className="hidden md:flex items-center gap-2">
-                  <Link to="/login" className="px-4 py-2 text-sm font-medium text-[#9ca3af] hover:text-white transition-colors rounded-lg">
+                  <Link to="/login" className="px-4 py-2 text-[13px] font-medium text-[#999] hover:text-white rounded-xl transition-colors">
                     Sign In
                   </Link>
-                  <Link to="/register" className="btn-glow px-5 py-2 text-sm font-semibold text-white rounded-xl">
+                  <Link to="/register" className="px-5 py-2.5 text-[13px] font-semibold text-white bg-gradient-to-r from-[#f97316] to-[#ea580c] rounded-xl shadow-lg shadow-[#f97316]/20 hover:shadow-[#f97316]/40 transition-all">
                     Get Started
                   </Link>
                 </div>
               )}
 
-              {/* ── Mobile Hamburger ── */}
+              {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
+                className="md:hidden w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center"
               >
-                <div className="w-5 h-5 flex flex-col justify-center gap-1.5">
-                  <motion.span
-                    animate={mobileOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
-                    className="block w-full h-0.5 bg-white rounded-full origin-center"
-                  />
-                  <motion.span
-                    animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-                    className="block w-full h-0.5 bg-white rounded-full"
-                  />
-                  <motion.span
-                    animate={mobileOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }}
-                    className="block w-full h-0.5 bg-white rounded-full origin-center"
-                  />
+                <div className="w-4 h-4 flex flex-col justify-center gap-[5px]">
+                  <motion.span animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }} className="block w-full h-[1.5px] bg-white rounded-full origin-center" />
+                  <motion.span animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }} className="block w-full h-[1.5px] bg-white rounded-full" />
+                  <motion.span animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }} className="block w-full h-[1.5px] bg-white rounded-full origin-center" />
                 </div>
               </button>
             </div>
@@ -214,71 +206,45 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* ── Mobile Full-Screen Menu ── */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-2xl md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-[#0a0a0a]/98 backdrop-blur-3xl md:hidden flex flex-col items-center justify-center"
           >
-            <div className="flex flex-col items-center justify-center h-full gap-6">
+            <div className="flex flex-col items-center gap-8">
               {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.to}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <Link
-                    to={link.to}
-                    className={`text-2xl font-semibold transition-colors ${
-                      isActive(link.to) ? 'gradient-text' : 'text-[#9ca3af] hover:text-white'
-                    }`}
-                  >
+                <motion.div key={link.to} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
+                  <Link to={link.to} className={`text-3xl font-semibold ${isActive(link.to) ? 'gradient-text' : 'text-[#666] hover:text-white'} transition-colors`}>
                     {link.label}
                   </Link>
                 </motion.div>
               ))}
-
-              {user ? (
+              {user && (
                 <>
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                    <Link to="/profile" className="text-2xl font-semibold text-[#9ca3af] hover:text-white transition-colors">
-                      Profile
-                    </Link>
+                    <Link to="/profile" className="text-3xl font-semibold text-[#666] hover:text-white transition-colors">Profile</Link>
                   </motion.div>
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                    <button onClick={handleLogout} className="text-2xl font-semibold text-red-400 hover:text-red-300 transition-colors">
-                      Logout
-                    </button>
+                    <button onClick={handleLogout} className="text-3xl font-semibold text-red-400/70 hover:text-red-400 transition-colors">Logout</button>
                   </motion.div>
                 </>
-              ) : (
-                <>
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                    <Link to="/login" className="text-2xl font-semibold text-[#9ca3af] hover:text-white transition-colors">
-                      Sign In
-                    </Link>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                    <Link to="/register" className="btn-glow px-8 py-3 text-lg font-semibold text-white rounded-xl">
-                      Get Started
-                    </Link>
-                  </motion.div>
-                </>
+              )}
+              {!user && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-col items-center gap-4 mt-4">
+                  <Link to="/login" className="text-3xl font-semibold text-[#666] hover:text-white transition-colors">Sign In</Link>
+                  <Link to="/register" className="px-8 py-3.5 text-lg font-semibold text-white bg-gradient-to-r from-[#f97316] to-[#ea580c] rounded-2xl">Get Started</Link>
+                </motion.div>
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Click outside to close profile dropdown */}
-      {profileOpen && (
-        <div className="fixed inset-0 z-30" onClick={() => setProfileOpen(false)} />
-      )}
+      {profileOpen && <div className="fixed inset-0 z-30" onClick={() => setProfileOpen(false)} />}
     </>
   )
 }
