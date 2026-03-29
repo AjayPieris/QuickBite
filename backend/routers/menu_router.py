@@ -8,6 +8,7 @@ from cloudinary_config import upload_image
 
 router = APIRouter(prefix="/menu", tags=["Menu"])
 
+@router.get("", response_model=list[schemas.MenuItemOut])
 @router.get("/", response_model=list[schemas.MenuItemOut])
 def get_menu(db: Session = Depends(get_db)):
     """Anyone can view the menu"""
