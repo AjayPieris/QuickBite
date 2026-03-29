@@ -14,7 +14,10 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+try:
+    EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080")) # Default 7 days
+except ValueError:
+    EXPIRE_MINUTES = 10080
 
 # Tool for hashing and checking passwords
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
