@@ -13,6 +13,7 @@ def register(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    role: str = Form("user"),
     file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
@@ -28,6 +29,7 @@ def register(
         name=name,
         email=email,
         password=auth.hash_password(password),  # Never store plain passwords!
+        role=role,
         profile_image_url=image_url
     )
     db.add(new_user)
