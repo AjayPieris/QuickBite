@@ -114,7 +114,7 @@ export default function AdminDashboard() {
               {sidebarItems.map(item => (
                 <button key={item.id} onClick={() => { setActive(item.id); setSidebarOpen(false) }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    active === item.id ? 'bg-[#f97316]/10 text-[#f97316]' : 'text-[#9ca3af] hover:text-white hover:bg-white/5'
+                    active === item.id ? 'bg-accent/10 text-accent' : 'text-text-muted hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <span className="text-lg">{item.icon}</span>
@@ -152,10 +152,10 @@ export default function AdminDashboard() {
                     <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="glass rounded-2xl p-5">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-2xl">{kpi.icon}</span>
-                        {kpi.trend && <span className="text-xs font-medium text-[#22c55e]">{kpi.trend}</span>}
+                        {kpi.trend && <span className="text-xs font-medium text-success">{kpi.trend}</span>}
                       </div>
                       <p className="text-2xl font-bold text-white">{kpi.value}</p>
-                      <p className="text-[#9ca3af] text-xs mt-1">{kpi.label}</p>
+                      <p className="text-text-muted text-xs mt-1">{kpi.label}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-bold text-white mb-4">Recent Orders</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead><tr className="text-[#9ca3af] text-left border-b border-white/5">
+                      <thead><tr className="text-text-muted text-left border-b border-white/5">
                         <th className="pb-3 font-medium">ID</th><th className="pb-3 font-medium">Total</th><th className="pb-3 font-medium">Pickup</th><th className="pb-3 font-medium">Status</th>
                       </tr></thead>
                       <tbody>
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
                           <tr key={o.id} className="border-b border-white/5">
                             <td className="py-3 text-white">#{o.id}</td>
                             <td className="py-3 text-white">Rs.{o.total_price.toFixed(2)}</td>
-                            <td className="py-3 text-[#9ca3af]">{new Date(o.pickup_time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</td>
+                            <td className="py-3 text-text-muted">{new Date(o.pickup_time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</td>
                             <td className="py-3"><OrderStatusBadge status={o.status} /></td>
                           </tr>
                         ))}
@@ -209,15 +209,15 @@ export default function AdminDashboard() {
 
                 <div className="glass rounded-2xl overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead><tr className="text-[#9ca3af] text-left border-b border-white/5">
+                    <thead><tr className="text-text-muted text-left border-b border-white/5">
                       <th className="p-4 font-medium">Image</th><th className="p-4 font-medium">Name</th><th className="p-4 font-medium">Price</th><th className="p-4 font-medium">Actions</th>
                     </tr></thead>
                     <tbody>
                       {menuItems.map(item => (
-                        <tr key={item.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                          <td className="p-4"><div className="w-10 h-10 rounded-lg bg-[#1a1a1a] overflow-hidden"><img src={item.image_url || `https://placehold.co/40x40/111/f97316?text=${item.name?.charAt(0)}`} alt="" className="w-full h-full object-cover" /></div></td>
+                        <tr key={item.id} className="border-b border-white/5 hover:bg-white/2">
+                          <td className="p-4"><div className="w-10 h-10 rounded-lg bg-surface overflow-hidden"><img src={item.image_url || `https://placehold.co/40x40/111/f97316?text=${item.name?.charAt(0)}`} alt="" className="w-full h-full object-cover" /></div></td>
                           <td className="p-4 text-white font-medium">{item.name}</td>
-                          <td className="p-4 text-[#f97316] font-semibold">Rs.{item.price.toFixed(2)}</td>
+                          <td className="p-4 text-accent font-semibold">Rs.{item.price.toFixed(2)}</td>
                           <td className="p-4">
                             <button onClick={() => handleDeleteItem(item.id)} className="text-red-400 hover:text-red-300 text-xs font-medium">Delete</button>
                           </td>
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
                       ))}
                     </tbody>
                   </table>
-                  {menuItems.length === 0 && <p className="p-8 text-center text-[#9ca3af]">No menu items yet</p>}
+                  {menuItems.length === 0 && <p className="p-8 text-center text-text-muted">No menu items yet</p>}
                 </div>
 
                 {/* Add Item Drawer */}
@@ -236,21 +236,21 @@ export default function AdminDashboard() {
                       <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25 }} className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-[#111] border-l border-white/5 p-6 overflow-y-auto">
                         <div className="flex items-center justify-between mb-6">
                           <h2 className="text-xl font-bold text-white">Add New Item</h2>
-                          <button onClick={() => setShowAddItem(false)} className="text-[#9ca3af] hover:text-white">✕</button>
+                          <button onClick={() => setShowAddItem(false)} className="text-text-muted hover:text-white">✕</button>
                         </div>
                         <form onSubmit={handleAddItem} className="space-y-5">
                           <div>
-                            <label className="text-xs font-medium text-[#9ca3af] mb-1 block">Name</label>
+                            <label className="text-xs font-medium text-text-muted mb-1 block">Name</label>
                             <input type="text" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} required className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm" />
                           </div>
                           <div>
-                            <label className="text-xs font-medium text-[#9ca3af] mb-1 block">Price (Rs.)</label>
+                            <label className="text-xs font-medium text-text-muted mb-1 block">Price (Rs.)</label>
                             <input type="number" step="0.01" value={newItem.price} onChange={e => setNewItem({...newItem, price: e.target.value})} required className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm" />
                           </div>
                           <div>
-                            <label className="text-xs font-medium text-[#9ca3af] mb-1 block">Image</label>
-                            <div className="border-2 border-dashed border-white/10 rounded-xl p-6 text-center hover:border-[#f97316]/30 transition-colors cursor-pointer" onClick={() => document.getElementById('item-img').click()}>
-                              {imgPreview ? <img src={imgPreview} alt="" className="w-full h-32 object-cover rounded-lg" /> : <p className="text-[#9ca3af] text-sm">Click or drag to upload</p>}
+                            <label className="text-xs font-medium text-text-muted mb-1 block">Image</label>
+                            <div className="border-2 border-dashed border-white/10 rounded-xl p-6 text-center hover:border-accent/30 transition-colors cursor-pointer" onClick={() => document.getElementById('item-img').click()}>
+                              {imgPreview ? <img src={imgPreview} alt="" className="w-full h-32 object-cover rounded-lg" /> : <p className="text-text-muted text-sm">Click or drag to upload</p>}
                             </div>
                             <input id="item-img" type="file" accept="image/*" className="hidden" onChange={e => { setNewItem({...newItem, file: e.target.files[0]}); setImgPreview(URL.createObjectURL(e.target.files[0])) }} />
                           </div>
@@ -269,13 +269,13 @@ export default function AdminDashboard() {
                 <h1 className="text-2xl font-bold text-white mb-6">Order Management</h1>
                 <div className="flex flex-wrap gap-3 mb-6">
                   {['all','pending','preparing','ready'].map(f => (
-                    <button key={f} onClick={() => setOrderFilter(f)} className={`px-4 py-2 rounded-xl text-sm font-medium capitalize ${orderFilter === f ? 'bg-[#f97316] text-white' : 'glass text-[#9ca3af]'}`}>{f}</button>
+                    <button key={f} onClick={() => setOrderFilter(f)} className={`px-4 py-2 rounded-xl text-sm font-medium capitalize ${orderFilter === f ? 'bg-accent text-white' : 'glass text-text-muted'}`}>{f}</button>
                   ))}
-                  <input type="text" placeholder="Search by ID..." value={orderSearch} onChange={e => setOrderSearch(e.target.value)} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-[#9ca3af] ml-auto" />
+                  <input type="text" placeholder="Search by ID..." value={orderSearch} onChange={e => setOrderSearch(e.target.value)} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-text-muted ml-auto" />
                 </div>
                 <div className="glass rounded-2xl overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead><tr className="text-[#9ca3af] text-left border-b border-white/5">
+                    <thead><tr className="text-text-muted text-left border-b border-white/5">
                       <th className="p-4 font-medium">ID</th><th className="p-4 font-medium">Total</th><th className="p-4 font-medium">Pickup</th><th className="p-4 font-medium">Status</th><th className="p-4 font-medium">Update</th>
                     </tr></thead>
                     <tbody>
@@ -283,7 +283,7 @@ export default function AdminDashboard() {
                         <tr key={o.id} className="border-b border-white/5">
                           <td className="p-4 text-white">#{o.id}</td>
                           <td className="p-4 text-white">Rs.{o.total_price.toFixed(2)}</td>
-                          <td className="p-4 text-[#9ca3af]">{new Date(o.pickup_time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</td>
+                          <td className="p-4 text-text-muted">{new Date(o.pickup_time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</td>
                           <td className="p-4"><OrderStatusBadge status={o.status} /></td>
                           <td className="p-4">
                             <select value={o.status} onChange={e => handleStatusUpdate(o.id, e.target.value)} className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs">
@@ -296,7 +296,7 @@ export default function AdminDashboard() {
                       ))}
                     </tbody>
                   </table>
-                  {filteredOrders.length === 0 && <p className="p-8 text-center text-[#9ca3af]">No orders found</p>}
+                  {filteredOrders.length === 0 && <p className="p-8 text-center text-text-muted">No orders found</p>}
                 </div>
               </motion.div>
             )}
@@ -313,7 +313,7 @@ export default function AdminDashboard() {
                     {/* AI Summary */}
                     <div className="glass-strong rounded-2xl p-6">
                       <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">🤖 AI Summary</h3>
-                      <p className="text-[#9ca3af] leading-relaxed">{aiTyping || aiData.ai_summary}<span className="inline-block w-0.5 h-4 bg-[#f97316] ml-1 align-middle" style={{ animation: 'blink 1s infinite' }} /></p>
+                      <p className="text-text-muted leading-relaxed">{aiTyping || aiData.ai_summary}<span className="inline-block w-0.5 h-4 bg-accent ml-1 align-middle" style={{ animation: 'blink 1s infinite' }} /></p>
                     </div>
 
                     {/* Busy Hours Chart */}
@@ -342,7 +342,7 @@ export default function AdminDashboard() {
                               <div key={i}>
                                 <div className="flex justify-between text-sm mb-1">
                                   <span className="text-white">{f.name}</span>
-                                  <span className="text-[#9ca3af]">{f.total_ordered} orders</span>
+                                  <span className="text-text-muted">{f.total_ordered} orders</span>
                                 </div>
                                 <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                                   <motion.div initial={{ width: 0 }} animate={{ width: `${(f.total_ordered / max) * 100}%` }} transition={{ duration: 1, delay: i * 0.2 }} className="h-full rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
@@ -356,7 +356,7 @@ export default function AdminDashboard() {
                   </div>
                 ) : (
                   <div className="text-center py-20">
-                    <p className="text-[#9ca3af]">Click to load AI insights</p>
+                    <p className="text-text-muted">Click to load AI insights</p>
                     <button onClick={fetchAi} className="btn-glow px-6 py-2 rounded-xl text-white text-sm mt-4">Load Insights</button>
                   </div>
                 )}

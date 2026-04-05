@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import PageTransition from "../components/PageTransition";
 import ScrollReveal from "../components/ScrollReveal";
-import { useState } from "react";
 
 // ── Floating Food Particles ──
 function FloatingParticles() {
@@ -265,7 +264,7 @@ export default function Landing() {
       {/* ══════════════════════════════════════════
           STATS SECTION
       ══════════════════════════════════════════ */}
-      <section id="stats" className="py-20 px-4 relative">
+      <section id="stats" className="block py-20 px-4 relative">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -273,8 +272,8 @@ export default function Landing() {
               { end: 2, suffix: " min", label: "Average Wait Time" },
               { end: 98, suffix: "%", label: "Satisfaction Rate" },
             ].map((stat, i) => (
-              <ScrollReveal key={i} delay={i * 0.15}>
-                <div className="glass rounded-2xl p-8 text-center card-hover">
+              <ScrollReveal key={i} delay={i * 0.15} className="h-full">
+                <div className="glass rounded-2xl p-8 text-center card-hover h-full flex flex-col justify-center">
                   <AnimatedCounter end={stat.end} suffix={stat.suffix} />
                   <p className="text-[#9ca3af] mt-3 text-sm font-medium">
                     {stat.label}
@@ -289,7 +288,7 @@ export default function Landing() {
       {/* ══════════════════════════════════════════
           FEATURES SECTION
       ══════════════════════════════════════════ */}
-      <section className="py-20 px-4 relative">
+      <section className="block py-20 px-4 relative">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <div className="text-center mb-16">
@@ -305,13 +304,15 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => (
-              <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="glass rounded-2xl p-6 card-hover h-full">
-                  <span className="text-4xl mb-4 block">{feature.icon}</span>
-                  <h3 className="text-white font-semibold text-lg mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-[#9ca3af] text-sm leading-relaxed">
+              <ScrollReveal key={i} delay={i * 0.1} className="h-full">
+                <div className="glass rounded-2xl p-6 card-hover h-full flex flex-col items-start text-left justify-between">
+                  <div>
+                    <span className="text-4xl mb-4 block">{feature.icon}</span>
+                    <h3 className="text-white font-semibold text-lg mb-2">
+                      {feature.title}
+                    </h3>
+                  </div>
+                  <p className="text-[#9ca3af] text-sm leading-relaxed mt-2">
                     {feature.desc}
                   </p>
                 </div>
@@ -324,7 +325,7 @@ export default function Landing() {
       {/* ══════════════════════════════════════════
           CTA SECTION
       ══════════════════════════════════════════ */}
-      <section className="py-20 px-4">
+      <section className="block py-20 px-4 relative">
         <ScrollReveal>
           <div className="max-w-4xl mx-auto text-center glass rounded-3xl p-12 md:p-16 relative overflow-hidden">
             {/* Background glow */}
@@ -351,7 +352,7 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="py-10 px-4 border-t border-white/5">
+      <footer className="block py-10 px-4 border-t border-white/5 relative">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-xl">🍽</span>
