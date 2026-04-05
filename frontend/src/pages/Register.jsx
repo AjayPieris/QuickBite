@@ -44,7 +44,14 @@ export default function Register() {
     setLoading(true)
     setError('')
     try {
-      await api.post('/auth/register', form)
+      const formData = new FormData()
+      formData.append('name', form.name)
+      formData.append('email', form.email)
+      formData.append('password', form.password)
+      formData.append('role', form.role)
+      // Note: We're not appending a file here since our form doesn't handle images yet.
+
+      await api.post('/auth/register', formData)
       const res = await api.post('/auth/login', { email: form.email, password: form.password })
       await login(res.data.access_token)
       navigate('/')
