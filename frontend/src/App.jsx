@@ -1,121 +1,85 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// src/App.jsx
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
+import { AuthProvider, useAuth } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
+import Navbar from './components/Navbar'
 
-function App() {
-  const [count, setCount] = useState(0)
+import Landing       from './pages/Landing'
+import Login         from './pages/Login'
+import Register      from './pages/Register'
+import Menu          from './pages/Menu'
+import Cart          from './pages/Cart'
+import Checkout      from './pages/Checkout'
+import OrderHistory  from './pages/OrderHistory'
+import Profile       from './pages/Profile'
+import AdminDashboard from './pages/AdminDashboard'
+
+/* Route guard — redirects to /login if not authenticated */
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-flame border-t-transparent animate-spin" />
+    </div>
+  )
+  return user ? children : <Navigate to="/login" replace />
+}
+
+/* Admin-only route */
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  return user?.role === 'admin' ? children : <Navigate to="/" replace />
+}
+
+/* Public route — if already logged in, skip to home */
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  return !user ? children : <Navigate to="/" replace />
+}
+
+function AppRoutes() {
+  const location = useLocation()
+  const { user } = useAuth()
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <Navbar />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public pages */}
+          <Route path="/welcome" element={<Landing />} />
+          <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
-      <div className="ticks"></div>
+          {/* Protected pages */}
+          <Route path="/"        element={<PrivateRoute><Menu /></PrivateRoute>} />
+          <Route path="/cart"    element={<PrivateRoute><Cart /></PrivateRoute>} />
+          <Route path="/checkout" element={<PrivateRoute><Checkout /></PrivateRoute>} />
+          <Route path="/orders"  element={<PrivateRoute><OrderHistory /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* Admin pages */}
+          <Route path="/admin"   element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+          {/* Catch-all: if logged in → home, else → landing */}
+          <Route path="*" element={user ? <Navigate to="/" replace /> : <Navigate to="/welcome" replace />} />
+        </Routes>
+      </AnimatePresence>
     </>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <AppRoutes />
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  )
+}
