@@ -73,11 +73,6 @@ function KpiCard({ icon, label, value, trend, color }) {
   )
 }
 
-/* ─── Dashboard tab ───────────────────────────────────── */
-const CHART_DATA = [
-  { day: 'Mon', orders: 42 }, { day: 'Tue', orders: 58 }, { day: 'Wed', orders: 47 },
-  { day: 'Thu', orders: 63 }, { day: 'Fri', orders: 89 }, { day: 'Sat', orders: 35 }, { day: 'Sun', orders: 27 },
-]
 function DashboardTab() {
   const [orders, setOrders] = useState([])
 
@@ -88,34 +83,69 @@ function DashboardTab() {
   const updateStatus = async (id, status) => {
     try {
       await api.put(`/orders/${id}/status?status=${status}`)
-    } catch { /* demo */ }
+    } catch { /* ignore */ }
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o))
   }
+
+  // Calculate KPIs
+  const today = new Date().setHours(0, 0, 0, 0)
+  const todaysOrders = orders.filter(o => new Date(o.created_at).setHours(0, 0, 0, 0) === today)
+  const todaysRevenue = todaysOrders.reduce((sum, o) => sum + o.total_price, 0)
+  const pendingOrders = orders.filter(o => o.status === 'pending').length
+
+  const itemCounts = {}
+  orders.forEach(o => {
+    if (Array.isArray(o.items)) {
+      o.items.forEach(i => {
+        itemCounts[i.menu_item?.name] = (itemCounts[i.menu_item?.name] || 0) + i.quantity
+      })
+    }
+  })
+  const topItem = Object.entries(itemCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '—'
+
+  // Calculate Weekly Chart Data
+  const last7Days = Array.from({length: 7}).map((_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    return {
+      day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      dateString: d.toDateString()
+    }
+  })
+
+  const chartData = last7Days.map(dayObj => {
+    const count = orders.filter(o => new Date(o.created_at).toDateString() === dayObj.dateString).length
+    return { day: dayObj.day, orders: count }
+  })
 
   return (
     <div className="space-y-6">
       {/* KPI row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon="🧾" label="Today's Orders"  value="47"      trend={12}  color="#f97316" />
-        <KpiCard icon="💰" label="Today's Revenue" value="LKR 18.2k" trend={8} color="#ffc947" />
-        <KpiCard icon="⏳" label="Pending"         value="6"       trend={-3}  color="#60a5fa" />
-        <KpiCard icon="🔥" label="Top Item"        value="Kottu"   trend={22}  color="#34d399" />
+        <KpiCard icon="🧾" label="Today's Orders"  value={todaysOrders.length.toString()} trend={0}  color="#f97316" />
+        <KpiCard icon="💰" label="Today's Revenue" value={`LKR ${todaysRevenue.toFixed(0)}`} trend={0} color="#ffc947" />
+        <KpiCard icon="⏳" label="Pending"         value={pendingOrders.toString()}       trend={0}  color="#60a5fa" />
+        <KpiCard icon="🔥" label="Top Item"        value={topItem}   trend={0}  color="#34d399" />
       </div>
 
       {/* Chart */}
       <div className="glass rounded-2xl p-6 border border-white/5">
         <h3 className="font-display font-600 text-snow mb-5">Orders This Week</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={CHART_DATA}>
-            <XAxis dataKey="day" stroke="#6b6b7b" tick={{ fontSize: 12, fontFamily: 'DM Sans' }} />
-            <YAxis stroke="#6b6b7b" tick={{ fontSize: 12, fontFamily: 'DM Sans' }} />
-            <Tooltip
-              contentStyle={{ background: '#1c1c20', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#f4f4f6', fontSize: 13 }}
-              cursor={{ stroke: 'rgba(255,77,0,0.2)' }}
-            />
-            <Line type="monotone" dataKey="orders" stroke="#ff4d00" strokeWidth={2.5} dot={{ fill: '#ff4d00', r: 4 }} activeDot={{ r: 6 }} />
-          </LineChart>
-        </ResponsiveContainer>
+        {orders.length > 0 ? (
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={chartData}>
+              <XAxis dataKey="day" stroke="#6b6b7b" tick={{ fontSize: 12, fontFamily: 'DM Sans' }} />
+              <YAxis stroke="#6b6b7b" tick={{ fontSize: 12, fontFamily: 'DM Sans' }} />
+              <Tooltip
+                contentStyle={{ background: '#1c1c20', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#f4f4f6', fontSize: 13 }}
+                cursor={{ stroke: 'rgba(255,77,0,0.2)' }}
+              />
+              <Line type="monotone" dataKey="orders" stroke="#ff4d00" strokeWidth={2.5} dot={{ fill: '#ff4d00', r: 4 }} activeDot={{ r: 6 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-[200px] flex items-center justify-center text-ash text-sm">No recent orders to display on the chart.</div>
+        )}
       </div>
 
       {/* Recent orders table */}
@@ -176,14 +206,8 @@ function MenuTab() {
   const [imageFile, setImageFile] = useState(null)
   const [saving, setSaving] = useState(false)
 
-  const DEMO = [
-    { id: 1, name: 'Chicken Fried Rice', price: 350, image_url: null },
-    { id: 2, name: 'Beef Kottu',         price: 420, image_url: null },
-    { id: 3, name: 'Veg Noodles',        price: 280, image_url: null },
-  ]
-
   useEffect(() => {
-    api.get('/menu').then(r => setItems(r.data)).catch(() => setItems(DEMO)).finally(() => setLoading(false))
+    api.get('/menu').then(r => setItems(r.data)).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   const handleAdd = async (e) => {
@@ -259,6 +283,11 @@ function MenuTab() {
       {/* Items table */}
       {loading ? (
         <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 shimmer-loading rounded-xl" />)}</div>
+      ) : items.length === 0 ? (
+         <div className="glass rounded-2xl border border-white/5 py-12 flex flex-col items-center justify-center text-ash">
+          <div className="text-4xl mb-2">🍽</div>
+          <p>Your menu is empty.</p>
+         </div>
       ) : (
         <div className="glass rounded-2xl border border-white/5 overflow-hidden">
           <table className="w-full text-sm">
