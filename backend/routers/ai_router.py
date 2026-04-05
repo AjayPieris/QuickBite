@@ -9,7 +9,10 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# The .env file has Gemini__ApiKey
+GEMINI_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("Gemini__ApiKey")
+if GEMINI_KEY:
+    genai.configure(api_key=GEMINI_KEY)
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
@@ -36,17 +39,20 @@ def ai_insights(db: Session = Depends(get_db)):
     )
     popular = [{"name": row.name, "total_ordered": int(row.total)} for row in popular_foods]
 
-    # Ask Gemini to generate a human-friendly summary
-    prompt = f"""
-    You are a canteen manager AI. Based on this data, give a short, friendly 2-3 sentence insight:
-    Busy hours: {busy_hours}
-    Popular foods: {popular}
-    """
-    model = genai.GenerativeModel("gemini-pro")
-    response = model.generate_content(prompt)
+    # Get AI generated summary
+    ai_text = "Not enough data yet for insights. Have some orders placed to view AI insights."
+    if busy_hours or popular:
+        if GEMINI_KEY:
+            try:
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                prompt = f"You are a canteen manager AI. Based on this data, give a short, friendly 2-3 sentence insight: Busy hours: {busy_hours}, Popular foods: {popular_foods}"
+                response = model.generate_content(prompt)
+                ai_text = response.text
+            except Exception as e:
+                ai_text = f"Insights temporarily unavailable. (Data: {len(busy_hours)} busy hours, {len(popular_foods)} top items)"
 
     return {
         "busy_hours": busy_hours,
         "popular_foods": popular,
-        "ai_summary": response.text
+        "ai_summary": ai_text
     }

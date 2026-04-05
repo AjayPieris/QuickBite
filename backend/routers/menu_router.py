@@ -14,6 +14,7 @@ def get_menu(db: Session = Depends(get_db)):
     """Anyone can view the menu"""
     return db.query(models.MenuItem).all()
 
+@router.post("", response_model=schemas.MenuItemOut)
 @router.post("/", response_model=schemas.MenuItemOut)
 def add_item(
     name: str = Form(...),

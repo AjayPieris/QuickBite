@@ -52,12 +52,22 @@ class OrderCreate(BaseModel):
     pickup_time: datetime
     items: List[OrderItemIn]
 
+class OrderItemOut(BaseModel):
+    id: int
+    quantity: int
+    menu_item: MenuItemOut
+
+    class Config:
+        from_attributes = True
+
 class OrderOut(BaseModel):
     id: int
     total_price: float
     pickup_time: datetime
     status: str
     created_at: datetime
+    user: Optional[UserOut] = None
+    items: Optional[List[OrderItemOut]] = []
 
     class Config:
         from_attributes = True

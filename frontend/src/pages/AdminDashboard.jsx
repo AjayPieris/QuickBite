@@ -78,15 +78,12 @@ const CHART_DATA = [
   { day: 'Mon', orders: 42 }, { day: 'Tue', orders: 58 }, { day: 'Wed', orders: 47 },
   { day: 'Thu', orders: 63 }, { day: 'Fri', orders: 89 }, { day: 'Sat', orders: 35 }, { day: 'Sun', orders: 27 },
 ]
-const RECENT_ORDERS = [
-  { id: 101, user: 'Ashan P.', items: 'Chicken Rice, Juice', total: 430, status: 'ready' },
-  { id: 102, user: 'Nimali S.', items: 'Kottu, Coke', total: 500, status: 'preparing' },
-  { id: 103, user: 'Ravindu K.', items: 'Fish Curry Plate', total: 390, status: 'pending' },
-  { id: 104, user: 'Dilmi W.', items: 'Veg Noodles, Tea', total: 360, status: 'ready' },
-]
-
 function DashboardTab() {
-  const [orders, setOrders] = useState(RECENT_ORDERS)
+  const [orders, setOrders] = useState([])
+
+  useEffect(() => {
+    api.get('/orders').then(r => setOrders(r.data)).catch(() => {})
+  }, [])
 
   const updateStatus = async (id, status) => {
     try {
@@ -139,9 +136,11 @@ function DashboardTab() {
               {orders.map(order => (
                 <tr key={order.id} className="border-b border-white/3 hover:bg-white/2 transition-colors">
                   <td className="px-6 py-4 font-display font-600 text-snow">#{order.id}</td>
-                  <td className="px-6 py-4 text-mist">{order.user}</td>
-                  <td className="px-6 py-4 text-mist truncate max-w-[160px]">{order.items}</td>
-                  <td className="px-6 py-4 text-flame font-display font-600">LKR {order.total}</td>
+                  <td className="px-6 py-4 text-mist">{order.user?.name || '—'}</td>
+                  <td className="px-6 py-4 text-mist truncate max-w-[160px]">
+                    {Array.isArray(order.items) ? order.items.map(i => `${i.menu_item.name} (${i.quantity})`).join(', ') : order.items}
+                  </td>
+                  <td className="px-6 py-4 text-flame font-display font-600">LKR {order.total_price}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-display font-600 border ${
                       order.status === 'ready' ? 'badge-ready' : order.status === 'preparing' ? 'badge-preparing' : 'badge-pending'
@@ -305,16 +304,8 @@ function OrdersTab() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter]   = useState('all')
 
-  const DEMO_ORDERS_ADMIN = [
-    { id: 201, user: { name: 'Ashan P.' }, total_price: 430, status: 'pending',   pickup_time: new Date().toISOString(), created_at: new Date().toISOString() },
-    { id: 202, user: { name: 'Nimali S.' }, total_price: 500, status: 'preparing', pickup_time: new Date().toISOString(), created_at: new Date().toISOString() },
-    { id: 203, user: { name: 'Ravindu K.' }, total_price: 390, status: 'ready',   pickup_time: new Date().toISOString(), created_at: new Date().toISOString() },
-  ]
-
   useEffect(() => {
-    // Admin would have a separate endpoint; using demo data
-    setOrders(DEMO_ORDERS_ADMIN)
-    setLoading(false)
+    api.get('/orders').then(r => setOrders(r.data)).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   const updateStatus = async (id, status) => {
@@ -385,33 +376,38 @@ function OrdersTab() {
   )
 }
 
-/* ─── AI Insights tab ─────────────────────────────────── */
-const BUSY_HOURS = [
-  { hour: '8am', orders: 12 }, { hour: '9am', orders: 18 }, { hour: '10am', orders: 9 },
-  { hour: '11am', orders: 22 }, { hour: '12pm', orders: 48 }, { hour: '1pm', orders: 41 },
-  { hour: '2pm', orders: 31 }, { hour: '3pm', orders: 14 }, { hour: '4pm', orders: 8 },
-]
-const POPULAR = [
-  { name: 'Kottu', value: 35, color: '#ff4d00' },
-  { name: 'Fried Rice', value: 28, color: '#ffc947' },
-  { name: 'Noodles', value: 19, color: '#60a5fa' },
-  { name: 'Burger', value: 11, color: '#34d399' },
-  { name: 'Other', value: 7, color: '#6b6b7b' },
-]
-
 function AITab() {
   const [insights, setInsights] = useState(null)
   const [loading, setLoading]   = useState(true)
   const [typedText, setTypedText] = useState('')
 
-  const DEMO_SUMMARY = "Peak ordering times are 12pm–1pm with 48 orders/hour. Kottu remains the most popular item (35% of orders). Consider staffing up during the noon rush and pre-prepping Kottu ingredients early morning to reduce wait times."
-
   useEffect(() => {
     api.get('/ai/insights')
       .then(res => setInsights(res.data))
-      .catch(() => setInsights({ ai_summary: DEMO_SUMMARY }))
+      .catch(() => setInsights({ ai_summary: 'Unable to connect to AI service.' }))
       .finally(() => setLoading(false))
   }, [])
+
+  // Format busy hours from backend (hour 14 -> "2pm")
+  const formatHour = (h) => {
+    if (h === 0) return '12am'
+    if (h === 12) return '12pm'
+    return h > 12 ? `${h - 12}pm` : `${h}am`
+  }
+  const busyHoursData = insights?.busy_hours?.map(b => ({
+    hour: formatHour(b.hour),
+    orders: b.orders
+  })) || []
+
+  // Format popular foods and calculate percentage
+  const COLORS = ['#ff4d00', '#ffc947', '#60a5fa', '#34d399', '#6b6b7b']
+  const totalFoods = insights?.popular_foods?.reduce((sum, f) => sum + f.total_ordered, 0) || 1
+  const popularData = insights?.popular_foods?.map((p, i) => ({
+    name: p.name,
+    value: Math.round((p.total_ordered / totalFoods) * 100),
+    count: p.total_ordered,
+    color: COLORS[i % COLORS.length]
+  })) || []
 
   // Typewriter for AI summary
   useEffect(() => {
@@ -451,42 +447,50 @@ function AITab() {
         {/* Busy hours bar chart */}
         <div className="glass rounded-2xl p-6 border border-white/5">
           <h3 className="font-display font-600 text-snow mb-5">Busy Hours</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={BUSY_HOURS}>
-              <XAxis dataKey="hour" stroke="#6b6b7b" tick={{ fontSize: 11, fontFamily: 'DM Sans' }} />
-              <YAxis stroke="#6b6b7b" tick={{ fontSize: 11, fontFamily: 'DM Sans' }} />
-              <Tooltip contentStyle={{ background: '#1c1c20', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#f4f4f6', fontSize: 12 }} />
-              <Bar dataKey="orders" fill="#ff4d00" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {busyHoursData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={busyHoursData}>
+                <XAxis dataKey="hour" stroke="#6b6b7b" tick={{ fontSize: 11, fontFamily: 'DM Sans' }} />
+                <YAxis stroke="#6b6b7b" tick={{ fontSize: 11, fontFamily: 'DM Sans' }} />
+                <Tooltip contentStyle={{ background: '#1c1c20', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#f4f4f6', fontSize: 12 }} />
+                <Bar dataKey="orders" fill="#ff4d00" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[200px] flex items-center justify-center text-ash text-sm">No order data available yet.</div>
+          )}
         </div>
 
         {/* Popular foods donut */}
         <div className="glass rounded-2xl p-6 border border-white/5">
           <h3 className="font-display font-600 text-snow mb-5">Popular Items</h3>
-          <div className="flex items-center gap-6">
-            <PieChart width={160} height={160}>
-              <Pie data={POPULAR} cx={75} cy={75} innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                {POPULAR.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-              </Pie>
-            </PieChart>
-            <div className="flex flex-col gap-2 flex-1">
-              {POPULAR.map((item) => (
-                <div key={item.name} className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                    <span className="text-mist text-xs">{item.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-1">
-                    <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${item.value}%`, background: item.color }} />
+          {popularData.length > 0 ? (
+            <div className="flex items-center gap-6">
+              <PieChart width={160} height={160}>
+                <Pie data={popularData} cx={75} cy={75} innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
+                  {popularData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                </Pie>
+              </PieChart>
+              <div className="flex flex-col gap-2 flex-1">
+                {popularData.map((item) => (
+                  <div key={item.name} className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                      <span className="text-mist text-xs truncate max-w-[80px]" title={item.name}>{item.name}</span>
                     </div>
-                    <span className="text-snow text-xs font-display font-600 w-6 text-right">{item.value}%</span>
+                    <div className="flex items-center gap-2 flex-1">
+                      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${item.value}%`, background: item.color }} />
+                      </div>
+                      <span className="text-snow text-xs font-display font-600 w-8 text-right">{item.value}%</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="h-[160px] flex items-center justify-center text-ash text-sm">No food items ordered yet.</div>
+          )}
         </div>
       </div>
     </div>

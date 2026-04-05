@@ -6,6 +6,12 @@ import models, schemas, auth
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
+@router.get("", response_model=list[schemas.OrderOut])
+@router.get("/", response_model=list[schemas.OrderOut])
+def get_all_orders(db: Session = Depends(get_db), admin=Depends(auth.require_admin)):
+    """Admin gets all orders"""
+    return db.query(models.Order).all()
+
 @router.post("/", response_model=schemas.OrderOut)
 def place_order(order_data: schemas.OrderCreate, db: Session = Depends(get_db), current_user=Depends(auth.get_current_user)):
     # Calculate total price
