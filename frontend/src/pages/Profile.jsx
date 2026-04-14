@@ -57,7 +57,7 @@ export default function Profile() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-3 glass rounded-xl border border-white/10 text-snow text-sm shadow-xl"
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-3 glass rounded-xl border border-black/5 text-snow text-sm shadow-xl"
         >
           {toast}
         </motion.div>
@@ -76,10 +76,10 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="glass rounded-3xl p-8 border border-white/8 mb-5 flex flex-col sm:flex-row items-center gap-6"
+        className="glass rounded-3xl p-8 border border-black/5 mb-5 flex flex-col sm:flex-row items-center gap-6 shadow-md"
       >
         <div className="relative group cursor-pointer" onClick={() => fileRef.current.click()}>
-          <div className="w-24 h-24 rounded-2xl overflow-hidden ring-2 ring-flame/30 ring-offset-2 ring-offset-ink">
+          <div className="w-24 h-24 rounded-2xl overflow-hidden ring-2 ring-flame/30 ring-offset-2 ring-offset-surface shadow-lg">
             {user?.profile_image_url ? (
               <img src={user.profile_image_url} className="w-full h-full object-cover" alt="avatar" />
             ) : (
@@ -102,7 +102,7 @@ export default function Profile() {
           <h2 className="font-display font-700 text-xl text-snow">{user?.name}</h2>
           <p className="text-ash text-sm">{user?.email}</p>
           <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-display font-600 ${
-            user?.role === 'admin' ? 'bg-flame/15 text-flame border border-flame/30' : 'bg-blue-500/15 text-blue-400 border border-blue-400/30'
+            user?.role === 'admin' ? 'bg-flame/10 text-flame border border-flame/20' : 'bg-blue-50 text-blue-500 border border-blue-100'
           }`}>
             {user?.role === 'admin' ? '👑 Admin' : '👤 Customer'}
           </span>
@@ -122,7 +122,7 @@ export default function Profile() {
           { icon: '💰', label: 'Total Spent', value: 'LKR 4,820' },
           { icon: '📅', label: 'Member Since', value: '2024' },
         ].map((stat, i) => (
-          <div key={i} className="glass rounded-2xl p-4 border border-white/5 text-center">
+          <div key={i} className="glass rounded-2xl p-4 border border-black/5 text-center shadow-sm">
             <div className="text-2xl mb-2">{stat.icon}</div>
             <p className="font-display font-700 text-snow text-sm">{stat.value}</p>
             <p className="text-ash text-xs mt-0.5">{stat.label}</p>
@@ -135,7 +135,7 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="glass rounded-2xl p-6 border border-white/8"
+        className="glass rounded-2xl p-6 border border-black/5 shadow-sm"
       >
         <h3 className="font-display font-600 text-snow mb-5">Edit Profile</h3>
         <div className="space-y-4">

@@ -70,10 +70,10 @@ export default function Checkout() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass rounded-3xl p-8 border border-white/8 shadow-2xl relative z-10"
+        className="glass rounded-3xl p-8 border border-black/5 shadow-xl relative z-10"
       >
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
             ⚠ {error}
           </div>
         )}
@@ -81,12 +81,12 @@ export default function Checkout() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <h2 className="text-lg font-display font-600 text-snow mb-2">Order Summary</h2>
-            <div className="bg-surface rounded-xl p-4 border border-white/5 space-y-2">
+            <div className="bg-surface rounded-xl p-4 border border-black/5 space-y-2 shadow-sm">
               <div className="flex justify-between text-mist text-sm">
                 <span>Items ({totalItems})</span>
                 <span>LKR {totalPrice.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-mist text-sm border-b border-white/5 pb-2">
+              <div className="flex justify-between text-mist text-sm border-b border-black/5 pb-2">
                 <span>Service Fee</span>
                 <span>LKR 20.00</span>
               </div>

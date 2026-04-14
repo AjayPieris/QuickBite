@@ -40,7 +40,7 @@ export default function Login() {
         className="w-full max-w-md relative z-10"
       >
         {/* Card */}
-        <div className="glass rounded-3xl p-8 border border-white/8 shadow-2xl">
+        <div className="glass rounded-3xl p-8 border border-black/5 shadow-xl">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-flame to-ember flex items-center justify-center text-2xl shadow-lg shadow-flame/30 mb-4">
@@ -55,7 +55,7 @@ export default function Login() {
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
+              className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm"
             >
               ⚠ {error}
             </motion.div>
@@ -90,7 +90,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-snow transition-colors text-sm"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-mist hover:text-ink transition-colors text-sm"
                 >
                   {showPw ? '🙈' : '👁'}
                 </button>
@@ -124,11 +124,6 @@ export default function Login() {
             </Link>
           </p>
         </div>
-
-        {/* Demo hint */}
-        <p className="text-center text-ash/50 text-xs mt-4">
-          Admin demo: admin@quickbite.com / admin123
-        </p>
       </motion.div>
     </div>
   )

@@ -11,7 +11,7 @@ const CATEGORIES = ['All', 'Rice', 'Noodles', 'Drinks', 'Snacks', 'Salads']
 // Skeleton loader card
 function SkeletonCard() {
   return (
-    <div className="bg-card rounded-2xl overflow-hidden border border-white/5">
+    <div className="bg-card rounded-2xl overflow-hidden border border-black/5 shadow-sm">
       <div className="h-44 shimmer-loading" />
       <div className="p-4 space-y-2">
         <div className="h-4 rounded-lg shimmer-loading w-3/4" />
@@ -115,10 +115,10 @@ export default function Menu() {
             <button
               key={cat}
               onClick={() => setCategory(cat)}
-              className={`px-4 py-2.5 rounded-xl text-sm font-display font-600 whitespace-nowrap transition-all ${
+              className={`px-4 py-2.5 rounded-xl text-sm font-display font-600 whitespace-nowrap transition-all shadow-sm ${
                 category === cat
                   ? 'bg-flame text-white shadow-lg shadow-flame/30'
-                  : 'glass-light text-mist hover:text-snow hover:border-white/20 border border-white/5'
+                  : 'glass-light text-mist hover:text-ink hover:border-black/10 border border-black/5'
               }`}
             >
               {cat}

@@ -13,7 +13,7 @@ const DEMO_ORDERS = [
 
 function SkeletonOrder() {
   return (
-    <div className="glass rounded-2xl p-5 border border-white/5 space-y-3">
+    <div className="glass rounded-2xl p-5 border border-black/5 space-y-3 shadow-sm">
       <div className="flex justify-between">
         <div className="h-4 w-24 shimmer-loading rounded-lg" />
         <div className="h-5 w-20 shimmer-loading rounded-full" />
@@ -70,7 +70,7 @@ export default function OrderHistory() {
             className={`px-4 py-2 rounded-xl text-sm font-display font-600 transition-all ${
               filter === tab.key
                 ? 'bg-flame text-white shadow-lg shadow-flame/25'
-                : 'glass-light text-mist hover:text-snow border border-white/5'
+                : 'glass-light text-mist hover:text-ink hover:border-black/10 border border-black/5 shadow-sm'
             }`}
           >
             {tab.label}
@@ -93,7 +93,7 @@ export default function OrderHistory() {
         /* Timeline */
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-flame/30 via-border to-transparent" />
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-flame/30 via-black/5 to-transparent" />
 
           <div className="space-y-4 pl-14">
             {filtered.map((order, i) => (
@@ -105,12 +105,12 @@ export default function OrderHistory() {
                 className="relative"
               >
                 {/* Timeline dot */}
-                <div className={`absolute -left-[3.25rem] top-5 w-3 h-3 rounded-full border-2 border-ink z-10 ${
+                <div className={`absolute -left-[3.25rem] top-5 w-3 h-3 rounded-full border-2 border-surface z-10 ${
                   order.status === 'ready' ? 'bg-emerald-400' :
                   order.status === 'preparing' ? 'bg-blue-400' : 'bg-gold'
                 }`} />
 
-                <div className="glass rounded-2xl border border-white/5 overflow-hidden hover:border-white/10 transition-all">
+                <div className="glass rounded-2xl border border-black/5 overflow-hidden hover:border-flame/20 transition-all shadow-sm">
                   {/* Header */}
                   <div
                     className="p-5 cursor-pointer"
@@ -129,7 +129,7 @@ export default function OrderHistory() {
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="font-display font-700 text-flame text-lg">LKR {order.total_price?.toFixed(2)}</p>
-                        <button className="text-ash text-xs mt-1 hover:text-snow transition-colors">
+                        <button className="text-ash text-xs mt-1 hover:text-ink transition-colors">
                           {expanded === order.id ? '▲ Hide' : '▼ Details'}
                         </button>
                       </div>
@@ -145,7 +145,7 @@ export default function OrderHistory() {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <div className="border-t border-white/5 px-5 py-4">
+                        <div className="border-t border-black/5 px-5 py-4 bg-surface/30">
                           {order.items?.length > 0 ? (
                             <div className="space-y-2 mb-4">
                               {order.items.map((item, j) => (

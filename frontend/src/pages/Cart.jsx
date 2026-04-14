@@ -41,7 +41,7 @@ export default function Cart() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -60, height: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="glass rounded-2xl p-4 flex items-center gap-4 border border-white/5"
+                className="glass rounded-2xl p-4 flex items-center gap-4 border border-black/5 shadow-sm"
               >
                 {/* Image/emoji */}
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-surface flex-shrink-0 flex items-center justify-center text-2xl">
@@ -57,8 +57,8 @@ export default function Cart() {
                 </div>
 
                 {/* Qty stepper */}
-                <div className="flex items-center gap-2 bg-surface rounded-xl border border-white/8 px-2 py-1">
-                  <button onClick={() => updateQty(item.id, item.qty - 1)} className="w-7 h-7 flex items-center justify-center text-mist hover:text-snow text-lg transition-colors">−</button>
+                <div className="flex items-center gap-2 bg-surface rounded-xl border border-black/5 px-2 py-1 shadow-sm">
+                  <button onClick={() => updateQty(item.id, item.qty - 1)} className="w-7 h-7 flex items-center justify-center text-mist hover:text-ink text-lg transition-colors">−</button>
                   <span className="font-display font-700 text-snow text-sm w-4 text-center">{item.qty}</span>
                   <button onClick={() => updateQty(item.id, item.qty + 1)} className="w-7 h-7 flex items-center justify-center text-flame hover:text-ember text-lg transition-colors">+</button>
                 </div>
@@ -71,7 +71,7 @@ export default function Cart() {
                 {/* Remove */}
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="p-2 rounded-lg text-ash hover:text-red-400 hover:bg-red-400/10 transition-all"
+                  className="p-2 rounded-lg text-mist hover:text-red-500 hover:bg-red-50 transition-all"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -89,7 +89,7 @@ export default function Cart() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-2"
         >
-          <div className="glass rounded-2xl p-6 border border-white/8 sticky top-28">
+          <div className="glass rounded-2xl p-6 border border-black/5 sticky top-28 shadow-md">
             <h2 className="font-display font-700 text-snow text-lg mb-6">Order Summary</h2>
 
             <div className="space-y-3 mb-6">
@@ -101,7 +101,7 @@ export default function Cart() {
                 <span>Service fee</span>
                 <span className="text-snow">LKR 20.00</span>
               </div>
-              <div className="border-t border-white/8 pt-3 flex justify-between font-display font-700 text-snow">
+              <div className="border-t border-black/5 pt-3 flex justify-between font-display font-700 text-snow">
                 <span>Total</span>
                 <span className="text-flame text-lg">LKR {(totalPrice + 20).toFixed(2)}</span>
               </div>
@@ -114,7 +114,7 @@ export default function Cart() {
               Proceed to Checkout →
             </button>
 
-            <Link to="/" className="block text-center text-ash text-sm mt-4 hover:text-snow transition-colors">
+            <Link to="/" className="block text-center text-mist text-sm mt-4 hover:text-ink transition-colors">
               ← Continue shopping
             </Link>
           </div>

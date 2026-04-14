@@ -20,8 +20,8 @@ export default function FoodCard({ item }) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
-      className="bg-card rounded-2xl overflow-hidden border border-white/5 hover:border-flame/20 transition-all duration-300 group"
-      style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}
+      className="bg-card rounded-2xl overflow-hidden border border-black/5 hover:border-flame/20 transition-all duration-300 group shadow-sm"
+      style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}
     >
       {/* Image */}
       <div className="relative h-44 overflow-hidden bg-surface">
@@ -62,11 +62,11 @@ export default function FoodCard({ item }) {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="flex items-center justify-between bg-surface rounded-xl border border-white/8 overflow-hidden"
+                className="flex items-center justify-between bg-surface rounded-xl border border-black/5 overflow-hidden shadow-sm"
               >
                 <button
                   onClick={() => updateQty(item.id, cartItem.qty - 1)}
-                  className="w-10 h-10 flex items-center justify-center text-lg text-mist hover:text-snow hover:bg-white/5 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-lg text-mist hover:text-ink hover:bg-black/5 transition-colors"
                 >
                   −
                 </button>

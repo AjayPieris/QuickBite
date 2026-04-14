@@ -72,7 +72,7 @@ export default function Register() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
-        <div className="glass rounded-3xl p-8 border border-white/8 shadow-2xl">
+        <div className="glass rounded-3xl p-8 border border-black/5 shadow-xl">
           <div className="flex flex-col items-center mb-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-ember to-gold flex items-center justify-center text-2xl shadow-lg shadow-ember/30 mb-4">
               ✨
@@ -85,7 +85,7 @@ export default function Register() {
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
+              className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm"
             >
               ⚠ {error}
             </motion.div>
@@ -130,7 +130,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-snow transition-colors text-sm"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-mist hover:text-ink transition-colors text-sm"
                 >
                   {showPw ? '🙈' : '👁'}
                 </button>
@@ -138,26 +138,7 @@ export default function Register() {
               <PasswordStrength password={form.password} />
             </div>
 
-            {/* Role selector */}
-            <div>
-              <label className="block text-xs font-display font-600 text-mist mb-2 uppercase tracking-widest">Account Type</label>
-              <div className="flex gap-3">
-                {['user', 'admin'].map(role => (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => setForm({ ...form, role })}
-                    className={`flex-1 py-3 rounded-xl text-sm font-display font-600 transition-all border ${
-                      form.role === role
-                        ? 'bg-flame/15 border-flame text-flame'
-                        : 'bg-transparent border-white/10 text-ash hover:border-white/20'
-                    }`}
-                  >
-                    {role === 'user' ? '👤 Customer' : '👨‍💼 Admin'}
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             <motion.button
               type="submit"

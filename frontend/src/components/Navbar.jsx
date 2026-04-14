@@ -49,7 +49,7 @@ export default function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'glass border-b border-white/5 py-3' : 'py-5'
+          scrolled ? 'glass border-b border-black/5 py-3' : 'py-5'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
@@ -72,7 +72,7 @@ export default function Navbar() {
                 className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 ${
                   location.pathname === link.to
                     ? 'text-flame bg-flame/10'
-                    : 'text-mist hover:text-snow hover:bg-white/5'
+                    : 'text-mist hover:text-ink hover:bg-black/5'
                 }`}
               >
                 {link.label}
@@ -84,7 +84,7 @@ export default function Navbar() {
                 className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 ${
                   location.pathname.startsWith('/admin')
                     ? 'text-flame bg-flame/10'
-                    : 'text-mist hover:text-snow hover:bg-white/5'
+                    : 'text-mist hover:text-ink hover:bg-black/5'
                 }`}
               >
                 Admin
@@ -96,8 +96,8 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             {/* Cart icon */}
             {user && (
-              <Link to="/cart" className="relative p-2 rounded-xl hover:bg-white/5 transition-colors group">
-                <svg className="w-5 h-5 text-mist group-hover:text-snow transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/cart" className="relative p-2 rounded-xl hover:bg-black/5 transition-colors group">
+                <svg className="w-5 h-5 text-mist group-hover:text-ink transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 {totalItems > 0 && (
@@ -118,7 +118,7 @@ export default function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdown(!dropdown)}
-                  className="flex items-center gap-2 p-1 pr-3 rounded-full glass-light hover:border-white/15 transition-all"
+                  className="flex items-center gap-2 p-1 pr-3 rounded-full glass-light hover:border-black/10 transition-all shadow-sm"
                 >
                   <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-flame/40">
                     {user.profile_image_url
@@ -141,7 +141,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-48 glass rounded-xl border border-white/8 shadow-2xl overflow-hidden"
+                      className="absolute right-0 top-full mt-2 w-48 glass rounded-xl border border-black/5 shadow-2xl overflow-hidden"
                     >
                       {[
                         { to: '/profile', icon: '👤', label: 'Profile' },
@@ -150,13 +150,13 @@ export default function Navbar() {
                         <Link
                           key={item.to}
                           to={item.to}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-mist hover:text-snow hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-mist hover:text-ink hover:bg-black/5 transition-colors"
                           onClick={() => setDropdown(false)}
                         >
                           <span>{item.icon}</span> {item.label}
                         </Link>
                       ))}
-                      <div className="border-t border-white/5" />
+                      <div className="border-t border-black/5" />
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
@@ -176,15 +176,15 @@ export default function Navbar() {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-black/5 transition-colors"
             >
               <div className={`w-5 space-y-1 transition-all ${mobileOpen ? 'opacity-0' : ''}`}>
-                <span className="block h-0.5 bg-snow rounded" />
-                <span className="block h-0.5 bg-snow rounded" />
-                <span className="block h-0.5 bg-snow rounded w-3/4" />
+                <span className="block h-0.5 bg-ink rounded" />
+                <span className="block h-0.5 bg-ink rounded" />
+                <span className="block h-0.5 bg-ink rounded w-3/4" />
               </div>
               {mobileOpen && (
-                <svg className="w-5 h-5 text-snow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 text-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               )}
@@ -213,7 +213,7 @@ export default function Navbar() {
                 >
                   <Link
                     to={link.to}
-                    className="block px-5 py-4 rounded-xl text-lg font-display text-snow hover:bg-white/5 transition-colors"
+                    className="block px-5 py-4 rounded-xl text-lg font-display text-snow hover:bg-black/5 transition-colors"
                   >
                     {link.label}
                   </Link>

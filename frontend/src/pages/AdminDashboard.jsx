@@ -17,7 +17,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed }) {
     <motion.aside
       animate={{ width: collapsed ? 64 : 220 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="h-screen sticky top-0 flex-shrink-0 glass border-r border-white/5 flex flex-col py-6 overflow-hidden z-20"
+      className="h-screen sticky top-0 flex-shrink-0 glass border-r border-black/5 flex flex-col py-6 overflow-hidden z-20 shadow-sm"
     >
       {/* Logo */}
       <div className={`flex items-center gap-3 px-4 mb-8 ${collapsed ? 'justify-center' : ''}`}>
@@ -32,7 +32,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed }) {
             key={item.id}
             onClick={() => setActive(item.id)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left ${
-              active === item.id ? 'bg-flame/15 text-flame' : 'text-mist hover:text-snow hover:bg-white/5'
+              active === item.id ? 'bg-flame/10 text-flame' : 'text-mist hover:text-ink hover:bg-black/5'
             }`}
           >
             <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -59,11 +59,11 @@ function KpiCard({ icon, label, value, trend, color }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}
-      className="glass rounded-2xl p-5 border border-white/5 hover:border-white/10 transition-all"
+      className="glass rounded-2xl p-5 border border-black/5 hover:border-flame/20 transition-all shadow-sm bg-white"
     >
       <div className="flex items-start justify-between mb-3">
         <span className="text-2xl">{icon}</span>
-        <span className={`text-xs font-display font-600 px-2 py-1 rounded-lg ${trend >= 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'}`}>
+        <span className={`text-xs font-display font-600 px-2 py-1 rounded-lg ${trend >= 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'}`}>
           {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
         </span>
       </div>
@@ -137,8 +137,8 @@ function DashboardTab() {
               <XAxis dataKey="day" stroke="#6b6b7b" tick={{ fontSize: 12, fontFamily: 'DM Sans' }} />
               <YAxis stroke="#6b6b7b" tick={{ fontSize: 12, fontFamily: 'DM Sans' }} />
               <Tooltip
-                contentStyle={{ background: '#1c1c20', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#f4f4f6', fontSize: 13 }}
-                cursor={{ stroke: 'rgba(255,77,0,0.2)' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12, color: '#0c0c0e', fontSize: 13, boxShadow: '0 8px 32px rgba(0,0,0,0.05)' }}
+                cursor={{ stroke: 'rgba(255,77,0,0.1)' }}
               />
               <Line type="monotone" dataKey="orders" stroke="#ff4d00" strokeWidth={2.5} dot={{ fill: '#ff4d00', r: 4 }} activeDot={{ r: 6 }} />
             </LineChart>
@@ -149,22 +149,22 @@ function DashboardTab() {
       </div>
 
       {/* Recent orders table */}
-      <div className="glass rounded-2xl border border-white/5 overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/5">
+      <div className="glass rounded-2xl border border-black/5 overflow-hidden shadow-sm bg-white">
+        <div className="px-6 py-4 border-b border-black/5">
           <h3 className="font-display font-600 text-snow">Recent Orders</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5">
+              <tr className="border-b border-black/5">
                 {['ID', 'Customer', 'Items', 'Total', 'Status', 'Action'].map(h => (
-                  <th key={h} className="px-6 py-3 text-left text-xs font-display font-600 text-ash uppercase tracking-wider">{h}</th>
+                  <th key={h} className="px-6 py-3 text-left text-xs font-display font-600 text-mist uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {orders.map(order => (
-                <tr key={order.id} className="border-b border-white/3 hover:bg-white/2 transition-colors">
+               {orders.map(order => (
+                <tr key={order.id} className="border-b border-black/[0.03] hover:bg-black/[0.01] transition-colors">
                   <td className="px-6 py-4 font-display font-600 text-snow">#{order.id}</td>
                   <td className="px-6 py-4 text-mist">{order.user?.name || '—'}</td>
                   <td className="px-6 py-4 text-mist truncate max-w-[160px]">
@@ -180,7 +180,7 @@ function DashboardTab() {
                     <select
                       value={order.status}
                       onChange={e => updateStatus(order.id, e.target.value)}
-                      className="bg-surface text-mist text-xs rounded-lg px-2 py-1.5 border border-white/10 outline-none focus:border-flame cursor-pointer"
+                      className="bg-white text-mist text-xs rounded-lg px-2 py-1.5 border border-black/10 outline-none focus:border-flame cursor-pointer shadow-sm"
                     >
                       <option value="pending">Pending</option>
                       <option value="preparing">Preparing</option>
@@ -289,12 +289,12 @@ function MenuTab() {
           <p>Your menu is empty.</p>
          </div>
       ) : (
-        <div className="glass rounded-2xl border border-white/5 overflow-hidden">
+        <div className="glass rounded-2xl border border-black/5 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5">
+              <tr className="border-b border-black/5">
                 {['Image', 'Name', 'Price', 'Actions'].map(h => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-display font-600 text-ash uppercase tracking-wider">{h}</th>
+                  <th key={h} className="px-5 py-3 text-left text-xs font-display font-600 text-mist uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -305,7 +305,7 @@ function MenuTab() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.04 }}
-                  className="border-b border-white/3 hover:bg-white/2 transition-colors"
+                  className="border-b border-black/[0.03] hover:bg-black/[0.01] transition-colors"
                 >
                   <td className="px-5 py-3">
                     <div className="w-10 h-10 rounded-lg overflow-hidden bg-surface flex items-center justify-center text-lg">
@@ -352,7 +352,7 @@ function OrdersTab() {
             key={s}
             onClick={() => setFilter(s)}
             className={`px-4 py-2 rounded-xl text-sm font-display font-600 transition-all capitalize ${
-              filter === s ? 'bg-flame text-white' : 'glass-light text-mist hover:text-snow border border-white/5'
+              filter === s ? 'bg-flame text-white shadow-lg shadow-flame/30' : 'glass-light text-mist hover:text-ink border border-black/5'
             }`}
           >
             {s === 'all' ? 'All Orders' : s}
@@ -363,18 +363,18 @@ function OrdersTab() {
       {loading ? (
         <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 shimmer-loading rounded-xl" />)}</div>
       ) : (
-        <div className="glass rounded-2xl border border-white/5 overflow-hidden">
+        <div className="glass rounded-2xl border border-black/5 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5">
+              <tr className="border-b border-black/5">
                 {['Order', 'Customer', 'Total', 'Pickup', 'Status', 'Update'].map(h => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-display font-600 text-ash uppercase tracking-wider">{h}</th>
+                  <th key={h} className="px-5 py-3 text-left text-xs font-display font-600 text-mist uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map(order => (
-                <tr key={order.id} className="border-b border-white/3 hover:bg-white/2 transition-colors">
+                <tr key={order.id} className="border-b border-black/[0.03] hover:bg-black/[0.01] transition-colors">
                   <td className="px-5 py-4 font-display font-600 text-snow">#{order.id}</td>
                   <td className="px-5 py-4 text-mist">{order.user?.name || '—'}</td>
                   <td className="px-5 py-4 text-flame font-display font-600">LKR {order.total_price}</td>
@@ -481,7 +481,7 @@ function AITab() {
               <BarChart data={busyHoursData}>
                 <XAxis dataKey="hour" stroke="#6b6b7b" tick={{ fontSize: 11, fontFamily: 'DM Sans' }} />
                 <YAxis stroke="#6b6b7b" tick={{ fontSize: 11, fontFamily: 'DM Sans' }} />
-                <Tooltip contentStyle={{ background: '#1c1c20', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#f4f4f6', fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12, color: '#0c0c0e', fontSize: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.05)' }} />
                 <Bar dataKey="orders" fill="#ff4d00" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -508,7 +508,7 @@ function AITab() {
                       <span className="text-mist text-xs truncate max-w-[80px]" title={item.name}>{item.name}</span>
                     </div>
                     <div className="flex items-center gap-2 flex-1">
-                      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-black/5 rounded-full overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${item.value}%`, background: item.color }} />
                       </div>
                       <span className="text-snow text-xs font-display font-600 w-8 text-right">{item.value}%</span>

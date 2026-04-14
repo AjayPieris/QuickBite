@@ -96,10 +96,10 @@ export default function Landing() {
       {/* ── Hero ── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-radial from-flame/8 via-transparent to-transparent" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,77,0,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 bg-gradient-radial from-flame/5 via-transparent to-transparent" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,77,0,0.06) 0%, transparent 70%)' }} />
         {/* Grid lines */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)',
           backgroundSize: '60px 60px'
         }} />
 
@@ -118,7 +118,7 @@ export default function Landing() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 glass-light rounded-full border border-flame/20 text-sm text-mist mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 glass-light rounded-full border border-flame/15 text-sm text-ash mb-8 shadow-sm"
           >
             <span className="w-2 h-2 rounded-full bg-flame animate-pulse" />
             Now accepting pre-orders for today
@@ -165,7 +165,7 @@ export default function Landing() {
       </section>
 
       {/* ── Stats ticker ── */}
-      <section className="py-10 overflow-hidden border-y border-white/5">
+      <section className="py-10 overflow-hidden border-y border-black/5 bg-surface/50">
         <div className="flex gap-16 animate-marquee whitespace-nowrap" style={{ width: 'max-content' }}>
           {[...Array(2)].map((_, r) => (
             <div key={r} className="flex gap-16">
@@ -180,7 +180,7 @@ export default function Landing() {
                     <Counter target={stat.value} suffix={stat.suffix} />
                   </span>
                   <span className="text-ash text-sm">{stat.label}</span>
-                  <span className="text-border mx-4">|</span>
+                  <span className="text-black/5 mx-4">|</span>
                 </div>
               ))}
             </div>
@@ -209,8 +209,8 @@ export default function Landing() {
               initial={{ opacity: 0, y: 30 }}
               animate={featuresInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(255,77,0,0.12)' }}
-              className="glass rounded-2xl p-6 border border-white/5 hover:border-flame/20 transition-all cursor-default"
+              whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.06)' }}
+              className="glass rounded-2xl p-6 border border-black/5 hover:border-flame/10 transition-all cursor-default"
             >
               <div className="text-4xl mb-4">{f.icon}</div>
               <h3 className="font-display font-600 text-snow text-base mb-2">{f.title}</h3>
@@ -226,8 +226,8 @@ export default function Landing() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-center glass rounded-3xl p-12 border border-flame/15 relative overflow-hidden"
-          style={{ boxShadow: '0 0 80px rgba(255,77,0,0.08)' }}
+          className="max-w-3xl mx-auto text-center glass rounded-3xl p-12 border border-flame/10 relative overflow-hidden"
+          style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.04)' }}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-flame/5 to-transparent pointer-events-none" />
           <div className="relative z-10">
@@ -244,7 +244,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 px-6 text-center text-ash text-sm">
+      <footer className="border-t border-black/5 py-8 px-6 text-center text-mist text-sm bg-surface">
         © {new Date().getFullYear()} QuickBite · Canteen Pre-Order System
       </footer>
     </div>
