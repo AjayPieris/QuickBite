@@ -10,6 +10,7 @@
   --ash: #4b5563;
   --mist: #9ca3af;
   --snow: #111827;
+  --font: 'Outfit', sans-serif;
 }
 
 @layer base {
@@ -26,7 +27,7 @@
   body {
     background-color: var(--surface);
     color: var(--snow);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Outfit', sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
@@ -81,7 +82,7 @@
   .btn-flame {
     background: linear-gradient(135deg, #ff4d00, #ff8c42);
     color: #fff;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Outfit', sans-serif;
     font-weight: 600;
     letter-spacing: 0.02em;
     border-radius: 12px;
@@ -106,7 +107,7 @@
   .btn-outline {
     background: transparent;
     color: var(--snow);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Outfit', sans-serif;
     font-weight: 600;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -128,7 +129,7 @@
     border-radius: 12px;
     padding: 14px 18px;
     color: var(--snow);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Outfit', sans-serif;
     font-size: 15px;
     width: 100%;
     outline: none;
@@ -178,7 +179,7 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Outfit', sans-serif;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
@@ -210,6 +211,11 @@
   animation: shimmer 1.5s infinite;
 }
 
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* Glow ring animation for status */
 @keyframes ping-orange {
   75%, 100% {
@@ -222,3 +228,38 @@
   animation: ping-orange 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Auth input - shared between login/register */
+.auth-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1.5px solid #f1ece8;
+  background: #fff8f5;
+  color: #111827;
+  font-size: 15px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  line-height: 1;
+  outline: none;
+  display: flex;
+  align-items: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.auth-input::placeholder {
+  color: #c4b8b0;
+  font-weight: 300;
+  line-height: 1;
+}
+.auth-input:focus {
+  border-color: #ea580c;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);
+}
+.auth-input.pl-11 {
+  padding-left: 2.75rem;
+}
+.auth-input.pl-11,
+input.auth-input[class*='pl-'] {
+  padding-left: 2.75rem;
+}
