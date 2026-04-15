@@ -7,7 +7,7 @@ import api from '../api/axios'
 import FoodCard from '../components/FoodCard'
 import { useCart } from '../context/CartContext'
 
-const CATEGORIES = ['All', 'Rice', 'Noodles', 'Drinks', 'Snacks', 'Salads']
+const CATEGORIES = ['All', 'Rice', 'Noodles', 'FastFood', 'Drinks', 'Snacks']
 
 function SkeletonCard() {
   return (

@@ -123,12 +123,12 @@ export default function Login() {
         className="flex-1 bg-white flex flex-col"
       >
         {/* Form area */}
-        <div className="flex-1 flex items-center justify-center px-8 py-10">
+        <div className="flex-1 flex items-center justify-center px-8 pt-24 pb-10 lg:pt-12">
           <div className="w-full max-w-md">
 
             {/* Heading */}
-            <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible" className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-1.5">Sign in to QuickBite</h1>
+            <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible" className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">Sign in to QuickBite</h1>
               <p className="text-sm font-medium" style={{ color: '#ea580c' }}>
                 Enter your credentials to access your account.
               </p>
