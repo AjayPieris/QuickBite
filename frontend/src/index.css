@@ -216,6 +216,22 @@
   100% { background-position: -200% 0; }
 }
 
+@keyframes shimmer-warm {
+  0%   { background-position: -400px 0 }
+  100% { background-position:  400px 0 }
+}
+
+.shimmer-warm {
+  background: linear-gradient(
+    90deg,
+    #F5E8D8 0%,
+    #FDF0E4 40%,
+    #F5E8D8 80%
+  );
+  background-size: 800px 100%;
+  animation: shimmer-warm 1.4s ease-in-out infinite;
+}
+
 /* Glow ring animation for status */
 @keyframes ping-orange {
   75%, 100% {

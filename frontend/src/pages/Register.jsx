@@ -1,8 +1,8 @@
 // src/pages/Register.jsx
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Utensils, Zap, Star, Clock } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Utensils, Zap, Star, Clock, Camera } from 'lucide-react'
 import api from '../api/axios'
 
 // Password strength indicator
@@ -56,6 +56,7 @@ export default function Register() {
       fd.append('email', form.email)
       fd.append('password', form.password)
       fd.append('role', form.role)
+      
       await api.post('/auth/register', fd, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
@@ -153,10 +154,10 @@ export default function Register() {
         variants={panelVariants}
         initial="hidden"
         animate="visible"
-        className="flex-1 bg-white flex flex-col"
+        className="flex-1 bg-white flex flex-col overflow-hidden"
       >
         {/* Form area */}
-        <div className="flex-1 flex items-center justify-center px-8 pt-24 pb-10 lg:pt-12">
+        <div className="flex-1 flex justify-center px-8 pt-24 lg:pt-28 pb-4 overflow-hidden">
           <div className="w-full max-w-md">
 
             {/* Heading */}
@@ -184,7 +185,7 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="space-y-4">
 
               {/* Full Name */}
-              <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
+              <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible">
                 <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-widest">Full Name</label>
                 <div className="relative">
                   <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" strokeWidth={2} />
@@ -200,7 +201,7 @@ export default function Register() {
               </motion.div>
 
               {/* Email */}
-              <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible">
+              <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
                 <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-widest">Email Address</label>
                 <div className="relative">
                   <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" strokeWidth={2} />
@@ -216,7 +217,7 @@ export default function Register() {
               </motion.div>
 
               {/* Password */}
-              <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
+              <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible">
                 <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-widest">Password</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" strokeWidth={2} />
@@ -243,7 +244,7 @@ export default function Register() {
               </motion.div>
 
               {/* Submit */}
-              <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible" className="pt-2">
+              <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="pt-2">
                 <motion.button
                   type="submit"
                   disabled={loading}
@@ -264,14 +265,14 @@ export default function Register() {
               </motion.div>
 
               {/* OR */}
-              <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="flex items-center gap-3">
+              <motion.div custom={6} variants={fieldVariants} initial="hidden" animate="visible" className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-gray-100" />
                 <span className="text-xs text-gray-300 font-semibold tracking-wider">OR</span>
                 <div className="flex-1 h-px bg-gray-100" />
               </motion.div>
 
               {/* Google */}
-              <motion.div custom={6} variants={fieldVariants} initial="hidden" animate="visible">
+              <motion.div custom={7} variants={fieldVariants} initial="hidden" animate="visible">
                 <motion.button
                   type="button"
                   whileHover={{ backgroundColor: '#f9fafb', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
@@ -291,14 +292,14 @@ export default function Register() {
             </form>
 
             {/* Sign in link */}
-            <motion.p custom={7} variants={fieldVariants} initial="hidden" animate="visible" className="text-center text-sm text-gray-400 mt-6">
+            <motion.p custom={8} variants={fieldVariants} initial="hidden" animate="visible" className="text-center text-sm text-gray-400 mt-6">
               Already have an account?{' '}
               <Link to="/login" className="font-bold hover:opacity-75 transition-opacity" style={{ color: '#ea580c' }}>
                 Log in
               </Link>
             </motion.p>
 
-            <motion.div custom={8} variants={fieldVariants} initial="hidden" animate="visible" className="flex justify-center gap-4 mt-4">
+            <motion.div custom={9} variants={fieldVariants} initial="hidden" animate="visible" className="flex justify-center gap-4 mt-4">
               <span className="text-xs text-gray-300 hover:text-gray-500 cursor-pointer transition-colors">Privacy Policy</span>
               <span className="text-xs text-gray-300 hover:text-gray-500 cursor-pointer transition-colors">Terms of Service</span>
             </motion.div>

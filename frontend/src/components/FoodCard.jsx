@@ -1,118 +1,192 @@
 // src/components/FoodCard.jsx
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
-import { Plus, Minus, ShoppingBag, Flame, Utensils } from 'lucide-react'
+import { Plus, Minus, Utensils } from 'lucide-react'
 
-// Food placeholder icons array for items without images
-const FOOD_ICONS = [
-  <Utensils size={40} strokeWidth={1.2} className="text-flame/40" />,
-  <ShoppingBag size={40} strokeWidth={1.2} className="text-flame/40" />,
-]
+const colors = {
+  primary: '#2C1A0E',
+  muted: '#A08060',
+  accent: '#E8732A',
+  bg: '#F0E8DC',
+}
+
+const neumorphic = {
+  raised: {
+    background: colors.bg,
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85)',
+    border: 'none',
+  },
+  inset: {
+    background: colors.bg,
+    boxShadow: 'inset 5px 5px 12px rgba(180,130,90,0.26), inset -5px -5px 12px rgba(255,255,255,0.78)',
+    border: 'none',
+  },
+  buttonRaised: {
+    background: 'linear-gradient(135deg, #E8732A, #C87820)',
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85), 0 4px 12px rgba(232,115,42,0.3)',
+    border: 'none',
+    color: '#ffffff'
+  }
+}
 
 export default function FoodCard({ item }) {
   const { cart, addItem, updateQty } = useCart()
   const [popping, setPopping] = useState(false)
   const cartItem = cart.find(c => c.id === item.id)
+  const cardRef = useRef(null)
 
   const handleAdd = () => {
     addItem(item)
     setPopping(true)
-    setTimeout(() => setPopping(false), 600)
+    setTimeout(() => setPopping(false), 250)
+  }
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    cardRef.current.style.transform = `translateY(-4px) rotateX(${-y * 12}deg) rotateY(${x * 12}deg) scale(1.02)`
+    // Enhance the neumorphic shadow slightly on lift
+    cardRef.current.style.boxShadow = '10px 10px 24px rgba(180,130,90,0.36), -10px -10px 24px rgba(255,255,255,0.9)'
+  }
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return
+    cardRef.current.style.transform = 'translateY(0) rotateX(0) rotateY(0) scale(1)'
+    // Revert to original neumorphic shadow
+    cardRef.current.style.boxShadow = neumorphic.raised.boxShadow
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl overflow-hidden border border-black/5 hover:border-flame/20 transition-all duration-300 group"
-      style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.05)', fontFamily: "'Outfit', sans-serif" }}
+    <div 
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="rounded-[28px] p-4 transition-all duration-300 ease-out flex flex-col"
+      style={{
+        ...neumorphic.raised,
+        fontFamily: "'Outfit', sans-serif",
+        transformStyle: 'preserve-3d',
+        height: '100%'
+      }}
     >
-      {/* Image */}
-      <div className="relative h-44 overflow-hidden bg-orange-50/50">
+      {/* Image Section (Inset Container holding image) */}
+      <div 
+        className="relative h-[200px] w-full rounded-[20px] overflow-hidden flex items-center justify-center shrink-0" 
+        style={{ ...neumorphic.inset, transform: 'translateZ(15px)' }}
+      >
         {item.image_url ? (
-          <img
-            src={item.image_url}
-            alt={item.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
-            <Utensils size={52} strokeWidth={1} className="text-orange-200" />
+          <div className="w-full h-full p-2">
+            <div className="w-full h-full rounded-[14px] overflow-hidden flex items-center justify-center" style={neumorphic.raised}>
+              <img
+                src={item.image_url}
+                alt={item.name}
+                className="w-full h-full object-cover rounded-[14px]"
+              />
+            </div>
           </div>
+        ) : (
+          <Utensils size={42} strokeWidth={1.5} color={colors.accent} style={{ opacity: 0.6 }} />
         )}
 
-        {/* Popular badge with Lucide icon */}
-        {item.id % 3 === 0 && (
-          <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-flame/90 backdrop-blur-sm rounded-lg text-xs font-semibold text-white">
-            <Flame size={11} fill="white" strokeWidth={0} />
-            Popular
+        {/* Floating Category Badge (Top Left) */}
+        {item.category && (
+          <span 
+            className="absolute top-4 left-4 rounded-[10px] px-3 py-1 font-bold tracking-wider uppercase backdrop-blur-md"
+            style={{ 
+              background: 'rgba(240, 232, 220, 0.7)', // matches background but transparent
+              boxShadow: '0 2px 8px rgba(180,130,90,0.2)',
+              color: colors.primary,
+              fontSize: '10px',
+            }}
+          >
+            {item.category}
           </span>
         )}
 
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Circular Plus Button (Top Right, only visible when no cart item) */}
+        {!cartItem && (
+          <button
+            onClick={handleAdd}
+            className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+            style={{ 
+              ...neumorphic.buttonRaised,
+              boxShadow: '4px 4px 10px rgba(180,130,90,0.4), -4px -4px 10px rgba(255,255,255,0.7)',
+              transform: 'translateZ(25px)'
+            }}
+          >
+            <Plus size={18} strokeWidth={2.5} />
+          </button>
+        )}
       </div>
 
-      {/* Details */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-base leading-tight truncate">{item.name}</h3>
-        <p className="font-bold text-flame text-lg mt-1">
-          LKR {item.price?.toFixed(2)}
-        </p>
+      {/* Details Section */}
+      <div className="pt-5 pb-2 px-2 text-left flex-1 flex flex-col justify-between items-start w-full" style={{ transform: 'translateZ(20px)' }}>
+        <div className="w-full">
+          <h3 className="mb-1.5 leading-tight truncate text-[18px] font-semibold" style={{ color: colors.primary }}>
+            {item.name}
+          </h3>
+          <p 
+            className="font-bold text-[18px] mb-5" 
+            style={{ color: colors.accent }}
+          >
+            LKR {item.price?.toFixed(2)}
+          </p>
+        </div>
 
         {/* Cart control */}
-        <div className="mt-3">
+        <div className="mt-auto w-full" style={{ transform: 'translateZ(30px)' }}>
           <AnimatePresence mode="wait">
             {cartItem ? (
               <motion.div
                 key="stepper"
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="flex items-center justify-between bg-gray-50 rounded-xl border border-black/5 overflow-hidden"
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex items-center justify-between p-1.5 rounded-[18px]"
+                style={neumorphic.inset}
               >
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.9, ...neumorphic.inset }}
                   onClick={() => updateQty(item.id, cartItem.qty - 1)}
-                  className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-black/5 transition-colors"
+                  className="w-10 h-10 rounded-[12px] flex items-center justify-center transition-colors"
+                  style={{ ...neumorphic.raised, color: colors.primary }}
                 >
-                  <Minus size={15} strokeWidth={2.5} />
-                </button>
-                <span className="font-bold text-gray-900 text-sm">{cartItem.qty}</span>
-                <button
+                  <Minus size={16} strokeWidth={2.5} />
+                </motion.button>
+                <span className="font-bold text-[16px]" style={{ color: colors.primary }}>{cartItem.qty}</span>
+                <motion.button
+                  whileTap={{ scale: 0.9, ...neumorphic.inset }}
                   onClick={() => updateQty(item.id, cartItem.qty + 1)}
-                  className="w-10 h-10 flex items-center justify-center text-flame hover:bg-flame/10 transition-colors"
+                  className="w-10 h-10 rounded-[12px] flex items-center justify-center transition-colors"
+                  style={{ ...neumorphic.raised, color: colors.accent }}
                 >
-                  <Plus size={15} strokeWidth={2.5} />
-                </button>
+                  <Plus size={16} strokeWidth={2.5} />
+                </motion.button>
               </motion.div>
             ) : (
               <motion.button
                 key="add"
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 onClick={handleAdd}
-                whileTap={{ scale: 0.95 }}
-                className={`w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2
-                  ${popping ? 'bg-flame/20 border-flame scale-95' : 'bg-flame/8 hover:bg-flame/15 border border-flame/25 hover:border-flame/50'}
-                  text-flame`}
-                style={{ background: popping ? 'rgba(255,77,0,0.15)' : 'rgba(255,77,0,0.06)' }}
+                whileHover={{ y: -1, boxShadow: neumorphic.buttonRaised.boxShadow.replace('0.3', '0.45') }}
+                whileTap={{ scale: 0.97 }}
+                className="w-full py-3.5 rounded-[18px] text-white transition-all duration-200 flex items-center justify-center font-medium"
+                style={{ 
+                  ...neumorphic.buttonRaised,
+                  fontSize: '15px'
+                }}
               >
-                <motion.div
-                  animate={popping ? { rotate: [0, -20, 20, 0], scale: [1, 1.3, 0.9, 1] } : {}}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Plus size={16} strokeWidth={2.5} />
-                </motion.div>
                 Add to Cart
               </motion.button>
             )}
           </AnimatePresence>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

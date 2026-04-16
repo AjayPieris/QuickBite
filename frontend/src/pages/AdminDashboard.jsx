@@ -202,7 +202,7 @@ function MenuTab() {
   const [items, setItems]   = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-  const [form, setForm]     = useState({ name: '', price: '' })
+  const [form, setForm]     = useState({ name: '', price: '', category: 'All' })
   const [imageFile, setImageFile] = useState(null)
   const [saving, setSaving] = useState(false)
 
@@ -217,10 +217,11 @@ function MenuTab() {
       const fd = new FormData()
       fd.append('name', form.name)
       fd.append('price', form.price)
+      fd.append('category', form.category)
       if (imageFile) fd.append('file', imageFile)
       const res = await api.post('/menu', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
       setItems(prev => [...prev, res.data])
-      setForm({ name: '', price: '' })
+      setForm({ name: '', price: '', category: 'All' })
       setImageFile(null)
       setShowForm(false)
     } catch {
@@ -267,6 +268,17 @@ function MenuTab() {
                 <input className="input-dark" type="number" placeholder="350" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
               </div>
             </div>
+            <div>
+              <label className="block text-xs font-display font-600 text-mist mb-2 uppercase tracking-widest">Category</label>
+              <select className="input-dark w-full" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+                <option value="All">All</option>
+                <option value="Rice">Rice</option>
+                <option value="Noodles">Noodles</option>
+                <option value="FastFood">FastFood</option>
+                <option value="Drinks">Drinks</option>
+                <option value="Snacks">Snacks</option>
+              </select>
+            </div>
             {/* Image drop zone */}
             <label className="block border-2 border-dashed border-white/10 rounded-xl p-6 text-center cursor-pointer hover:border-flame/40 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={e => setImageFile(e.target.files[0])} />
@@ -293,7 +305,7 @@ function MenuTab() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-black/5">
-                {['Image', 'Name', 'Price', 'Actions'].map(h => (
+                {['Image', 'Name', 'Category', 'Price', 'Actions'].map(h => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-display font-600 text-mist uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -313,6 +325,7 @@ function MenuTab() {
                     </div>
                   </td>
                   <td className="px-5 py-3 font-display font-600 text-snow">{item.name}</td>
+                  <td className="px-5 py-3 text-mist text-sm">{item.category || 'All'}</td>
                   <td className="px-5 py-3 text-flame font-display font-700">LKR {item.price?.toFixed(2)}</td>
                   <td className="px-5 py-3">
                     <button onClick={() => handleDelete(item.id)} className="text-red-400 hover:bg-red-400/10 px-3 py-1.5 rounded-lg text-xs font-display transition-colors">Delete</button>

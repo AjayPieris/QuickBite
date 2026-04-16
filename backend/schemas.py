@@ -32,12 +32,14 @@ class Token(BaseModel):
 class MenuItemCreate(BaseModel):
     name: str
     price: float
+    category: Optional[str] = "All"
     image_url: Optional[str] = None
 
 class MenuItemOut(BaseModel):
     id: int
     name: str
     price: float
+    category: Optional[str] = "All"
     image_url: Optional[str] = None
 
     class Config:

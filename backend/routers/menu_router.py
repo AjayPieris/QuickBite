@@ -19,12 +19,13 @@ def get_menu(db: Session = Depends(get_db)):
 def add_item(
     name: str = Form(...),
     price: float = Form(...),
+    category: str = Form("All"),
     file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     admin=Depends(auth.require_admin)  # Only admins can add items
 ):
     image_url = upload_image(file.file) if file else None
-    item = models.MenuItem(name=name, price=price, image_url=image_url)
+    item = models.MenuItem(name=name, price=price, category=category, image_url=image_url)
     db.add(item)
     db.commit()
     db.refresh(item)
@@ -35,6 +36,7 @@ def update_item(
     item_id: int,
     name: str = Form(...),
     price: float = Form(...),
+    category: str = Form("All"),
     db: Session = Depends(get_db),
     admin=Depends(auth.require_admin)
 ):
@@ -43,6 +45,7 @@ def update_item(
         raise HTTPException(status_code=404, detail="Item not found")
     item.name = name
     item.price = price
+    item.category = category
     db.commit()
     db.refresh(item)
     return item

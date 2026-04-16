@@ -1,20 +1,56 @@
 // src/pages/Profile.jsx
 import { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import { Camera, Crown, User, Receipt, Wallet, CalendarDays, UserPen, Lock, Save, CheckCircle, AlertCircle } from 'lucide-react'
+
+// Common neumorphic styles
+const neumorphic = {
+  raised: {
+    background: '#F0E8DC',
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85)',
+    border: 'none',
+  },
+  inset: {
+    background: '#F0E8DC',
+    boxShadow: 'inset 5px 5px 12px rgba(180,130,90,0.26), -5px -5px 12px rgba(255,255,255,0.78)',
+    border: 'none',
+  },
+  buttonRaised: {
+    background: 'linear-gradient(135deg, #E8732A, #C87820)',
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85), 0 4px 12px rgba(232,115,42,0.3)',
+    border: 'none',
+    color: '#ffffff'
+  }
+}
+
+const fonts = {
+  heading: { fontFamily: "'Outfit', sans-serif" },
+  body: { fontFamily: "'Outfit', sans-serif" }
+}
+
+const colors = {
+  primary: '#2C1A0E',
+  muted: '#A08060',
+  accent: '#E8732A',
+  bg: '#F0E8DC',
+  success: '#5AAB5E',
+  error: '#E85A2A'
+}
 
 export default function Profile() {
   const { user, setUser }         = useAuth()
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving]       = useState(false)
-  const [toast, setToast]         = useState('')
+  const [toast, setToast]         = useState({ visible: false, msg: '', type: 'success' })
   const [name, setName]           = useState(user?.name || '')
+  const [isFocused, setIsFocused] = useState(false)
   const fileRef = useRef(null)
 
-  const showToast = (msg) => {
-    setToast(msg)
-    setTimeout(() => setToast(''), 3000)
+  const showToast = (msg, type = 'success') => {
+    setToast({ visible: true, msg, type })
+    setTimeout(() => setToast(t => ({ ...t, visible: false })), 3000)
   }
 
   const handleImageUpload = async (e) => {
@@ -28,9 +64,9 @@ export default function Profile() {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       setUser(res.data)
-      showToast('✅ Profile image updated!')
+      showToast('Profile image updated!', 'success')
     } catch {
-      showToast('❌ Upload failed. Try again.')
+      showToast('Upload failed', 'error')
     } finally {
       setUploading(false)
     }
@@ -39,131 +75,226 @@ export default function Profile() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      // Optimistic UI — update locally
+      // Optimistic locally
       setUser(prev => ({ ...prev, name }))
-      showToast('✅ Profile saved!')
+      // TODO: Call your actual update endpoint here if needed!
+      showToast('Profile saved!', 'success')
     } catch {
-      showToast('❌ Save failed.')
+      showToast('Failed to save profile.', 'error')
     } finally {
       setSaving(false)
     }
   }
 
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (custom = 0) => ({
+      opacity: 1, 
+      y: 0, 
+      transition: { delay: custom * 0.05, duration: 0.5, ease: 'easeOut' }
+    })
+  }
+
   return (
-    <div className="min-h-screen pt-24 pb-16 px-6 max-w-2xl mx-auto">
-      {/* Toast notification */}
-      {toast && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-3 glass rounded-xl border border-black/5 text-snow text-sm shadow-xl"
+    <div className="min-h-screen py-24 px-6 overflow-x-hidden" style={{ background: colors.bg, ...fonts.body }}>
+      <div className="max-w-xl mx-auto relative">
+        
+        {/* Toast Notification */}
+        <AnimatePresence>
+          {toast.visible && (
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-3 flex items-center gap-2.5 shadow-xl"
+              style={{
+                ...neumorphic.raised,
+                borderRadius: '16px',
+                borderLeft: `3px solid ${toast.type === 'success' ? colors.success : colors.error}`,
+                color: colors.primary
+              }}
+            >
+              {toast.type === 'success' ? (
+                <CheckCircle size={16} color={colors.success} />
+              ) : (
+                <AlertCircle size={16} color={colors.error} />
+              )}
+              <span className="text-sm font-semibold">{toast.msg}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Page Header */}
+        <motion.h1
+          custom={0} initial="hidden" animate="visible" variants={fadeInUp}
+          className="text-[32px] font-semibold mb-8"
+          style={{ ...fonts.heading, color: colors.primary }}
         >
-          {toast}
-        </motion.div>
-      )}
-
-      <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="font-display font-700 text-3xl text-snow mb-8"
-      >
-        My <span className="text-flame-gradient">Profile</span>
-      </motion.h1>
-
-      {/* Avatar section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="glass rounded-3xl p-8 border border-black/5 mb-5 flex flex-col sm:flex-row items-center gap-6 shadow-md"
-      >
-        <div className="relative group cursor-pointer" onClick={() => fileRef.current.click()}>
-          <div className="w-24 h-24 rounded-2xl overflow-hidden ring-2 ring-flame/30 ring-offset-2 ring-offset-surface shadow-lg">
-            {user?.profile_image_url ? (
-              <img src={user.profile_image_url} className="w-full h-full object-cover" alt="avatar" />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-flame to-ember flex items-center justify-center text-3xl font-display font-700 text-white">
-                {user?.name?.[0]?.toUpperCase()}
-              </div>
-            )}
-          </div>
-          {/* Upload overlay */}
-          <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            {uploading
-              ? <svg className="animate-spin w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              : <span className="text-white text-2xl">📷</span>
-            }
-          </div>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-        </div>
-
-        <div className="text-center sm:text-left">
-          <h2 className="font-display font-700 text-xl text-snow">{user?.name}</h2>
-          <p className="text-ash text-sm">{user?.email}</p>
-          <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-display font-600 ${
-            user?.role === 'admin' ? 'bg-flame/10 text-flame border border-flame/20' : 'bg-blue-50 text-blue-500 border border-blue-100'
-          }`}>
-            {user?.role === 'admin' ? '👑 Admin' : '👤 Customer'}
+          My{' '}
+          <span style={{ 
+            background: `linear-gradient(90deg, ${colors.accent}, #C8931A)`, 
+            WebkitBackgroundClip: 'text', 
+            WebkitTextFillColor: 'transparent' 
+          }}>
+            Profile
           </span>
-          <p className="text-ash/60 text-xs mt-2">Click image to change photo</p>
-        </div>
-      </motion.div>
+        </motion.h1>
 
-      {/* Stats row */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-3 gap-3 mb-5"
-      >
-        {[
-          { icon: '🧾', label: 'Total Orders', value: '12' },
-          { icon: '💰', label: 'Total Spent', value: 'LKR 4,820' },
-          { icon: '📅', label: 'Member Since', value: '2024' },
-        ].map((stat, i) => (
-          <div key={i} className="glass rounded-2xl p-4 border border-black/5 text-center shadow-sm">
-            <div className="text-2xl mb-2">{stat.icon}</div>
-            <p className="font-display font-700 text-snow text-sm">{stat.value}</p>
-            <p className="text-ash text-xs mt-0.5">{stat.label}</p>
-          </div>
-        ))}
-      </motion.div>
-
-      {/* Edit form */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="glass rounded-2xl p-6 border border-black/5 shadow-sm"
-      >
-        <h3 className="font-display font-600 text-snow mb-5">Edit Profile</h3>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-display font-600 text-mist mb-2 uppercase tracking-widest">Display Name</label>
-            <input
-              type="text"
-              className="input-dark"
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-display font-600 text-mist mb-2 uppercase tracking-widest">Email</label>
-            <input type="email" className="input-dark opacity-50 cursor-not-allowed" value={user?.email || ''} disabled />
-            <p className="text-ash text-xs mt-1">Email cannot be changed</p>
-          </div>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleSave}
-          disabled={saving}
-          className="btn-flame mt-5 flex items-center gap-2"
+        {/* Avatar Card (Hero) */}
+        <motion.div
+          custom={1} initial="hidden" animate="visible" variants={fadeInUp}
+          className="p-[2rem] mb-8 flex flex-col sm:flex-row items-center sm:items-start gap-6"
+          style={{ ...neumorphic.raised, borderRadius: '32px' }}
         >
-          {saving ? 'Saving…' : '💾 Save Changes'}
-        </motion.button>
-      </motion.div>
+          <div 
+            className="relative group cursor-pointer w-24 h-24 flex-shrink-0"
+            onClick={() => fileRef.current?.click()}
+          >
+            {/* Avatar image / initials */}
+            <div 
+              className="w-full h-full overflow-hidden flex items-center justify-center relative z-0"
+              style={{ 
+                ...neumorphic.raised, 
+                borderRadius: '28px', // squircle-like
+                boxShadow: `inset 0 0 0 1.5px rgba(232,115,42,0.15), ${neumorphic.raised.boxShadow}` // subtle inner orange ring
+              }}
+            >
+              {user?.profile_image_url ? (
+                <img src={user.profile_image_url} className="w-full h-full object-cover" alt="avatar" />
+              ) : (
+                <div 
+                  className="w-full h-full flex items-center justify-center font-bold text-3xl"
+                  style={{ ...fonts.heading, color: colors.accent, background: colors.bg }}
+                >
+                  {user?.name?.[0]?.toUpperCase() || 'U'}
+                </div>
+              )}
+
+              {/* Hover overlay */}
+              <div 
+                className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-250 rounded-[28px]" 
+                style={{ background: 'rgba(232,115,42,0.85)' }}
+              >
+                {uploading ? (
+                  <svg className="animate-spin w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                ) : (
+                  <Camera size={20} color="#ffffff" />
+                )}
+              </div>
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          </div>
+
+          <div className="text-center sm:text-left flex-1 mt-1 sm:mt-2">
+            <h2 style={{ ...fonts.heading, fontSize: '22px', fontWeight: 600, color: colors.primary }}>
+              {user?.name || 'Chef Gordon'}
+            </h2>
+            <p style={{ fontSize: '13px', color: colors.muted, marginTop: '2px' }}>
+              {user?.email || 'chef@quickbite.com'}
+            </p>
+            {/* Role Badge */}
+            <div 
+              className="inline-flex items-center gap-1.5 mt-4"
+              style={{ ...neumorphic.raised, borderRadius: '999px', padding: '6px 12px' }}
+            >
+              {user?.role === 'admin' ? <Crown size={13} color={colors.accent} /> : <User size={13} color={colors.accent} />}
+              <span style={{ fontSize: '12px', fontWeight: 600, color: colors.accent, textTransform: 'capitalize' }}>
+                {user?.role || 'Customer'}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Edit Profile Form Card */}
+        <motion.div
+           custom={3} initial="hidden" animate="visible" variants={fadeInUp}
+           className="p-6 sm:p-8"
+           style={{ ...neumorphic.raised, borderRadius: '24px' }}
+        >
+          {/* Section header */}
+          <div className="flex items-center gap-2.5 mb-7">
+            <UserPen size={18} color={colors.primary} />
+            <h3 style={{ ...fonts.heading, fontSize: '18px', fontWeight: 600, color: colors.primary }}>Edit Profile</h3>
+          </div>
+
+          <div className="space-y-5">
+            {/* Display Name */}
+            <div>
+              <label className="block mb-2 text-[11px] font-bold uppercase tracking-widest" style={{ color: colors.muted }}>
+                Display Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                className="w-full transition-all duration-300 outline-none"
+                style={{
+                  ...neumorphic.inset,
+                  borderRadius: '14px',
+                  padding: '13px 16px',
+                  color: colors.primary,
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  boxShadow: isFocused 
+                    ? `0 0 0 3px rgba(232,115,42,0.15), inset 5px 5px 12px rgba(180,130,90,0.26), inset -5px -5px 12px rgba(255,255,255,0.78)`
+                    : neumorphic.inset.boxShadow
+                }}
+              />
+            </div>
+
+            {/* Email (Disabled) */}
+            <div>
+              <label className="flex items-center gap-1.5 mb-2 text-[11px] font-bold uppercase tracking-widest" style={{ color: colors.muted }}>
+                Email Address <Lock size={12} color={colors.muted} />
+              </label>
+              <input 
+                type="email" 
+                value={user?.email || 'chef@quickbite.com'} 
+                disabled 
+                className="w-full"
+                style={{
+                  ...neumorphic.inset,
+                  borderRadius: '14px',
+                  padding: '13px 16px',
+                  color: colors.primary,
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  opacity: 0.55,
+                  cursor: 'not-allowed'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <motion.button
+            whileHover={{ 
+              y: -1, 
+              boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85), 0 6px 14px rgba(232,115,42,0.45)' 
+            }}
+            whileTap={{ 
+              scale: 0.98, 
+              boxShadow: 'inset 6px 6px 12px rgba(180, 70, 0, 0.4), inset -4px -4px 10px rgba(255, 180, 100, 0.3)' 
+            }}
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full mt-8 py-3.5 rounded-[16px] flex items-center justify-center gap-2 font-medium transition-colors"
+            style={{ ...neumorphic.buttonRaised, fontSize: '15px' }}
+          >
+            {saving ? (
+              <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+            ) : (
+              <>
+                <Save size={16} /> Save Changes
+              </>
+            )}
+          </motion.button>
+        </motion.div>
+
+      </div>
     </div>
   )
 }
