@@ -15,23 +15,49 @@ import {
   Utensils,
   LayoutDashboard,
   Zap,
-  Home,
 } from "lucide-react";
 
-const NAV_STYLE = {
-  fontFamily: "'Outfit', sans-serif",
-};
+// Common neumorphic styles
+const colors = {
+  primary: '#2C1A0E',
+  muted: '#A08060',
+  accent: '#E8732A',
+  bg: '#F0E8DC',
+  success: '#5AAB5E',
+  error: '#E85A2A',
+  blue: '#4A90E2', 
+  warning: '#F5A623', 
+}
 
-// Neumorphic pill container style
+const neumorphic = {
+  raised: {
+    background: colors.bg,
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85)',
+    border: 'none',
+  },
+  inset: {
+    background: colors.bg,
+    boxShadow: 'inset 5px 5px 12px rgba(180,130,90,0.26), inset -5px -5px 12px rgba(255,255,255,0.78)',
+    border: 'none',
+  },
+  buttonRaised: {
+    background: 'linear-gradient(135deg, #E8732A, #C87820)',
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85), 0 4px 12px rgba(232,115,42,0.3)',
+    border: 'none',
+    color: '#ffffff'
+  }
+}
+
+const fonts = {
+  heading: { fontFamily: "'Outfit', sans-serif" },
+  body: { fontFamily: "'Outfit', sans-serif" }
+}
+
 const pillStyle = (scrolled) => ({
-  background: scrolled ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.72)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  border: "1.5px solid rgba(255,255,255,0.9)",
-  boxShadow: scrolled
-    ? "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)"
-    : "0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
+  background: scrolled ? colors.bg : "transparent",
+  boxShadow: scrolled ? '6px 6px 16px rgba(180,130,90,0.3), -6px -6px 16px rgba(255,255,255,0.8)' : "none",
   borderRadius: "9999px",
+  transition: "all 0.3s ease",
 });
 
 export default function Navbar() {
@@ -45,7 +71,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -73,14 +99,14 @@ export default function Navbar() {
         {
           to: "/",
           label: "Menu",
-          icon: <Utensils size={14} strokeWidth={2} />,
+          icon: <Utensils size={14} strokeWidth={2.5} />,
         },
         ...(user.role !== "admin"
           ? [
               {
                 to: "/orders",
                 label: "My Orders",
-                icon: <ClipboardList size={14} strokeWidth={2} />,
+                icon: <ClipboardList size={14} strokeWidth={2.5} />,
               },
             ]
           : []),
@@ -89,12 +115,12 @@ export default function Navbar() {
         {
           to: "/login",
           label: "Login",
-          icon: <User size={14} strokeWidth={2} />,
+          icon: <User size={14} strokeWidth={2.5} />,
         },
         {
           to: "/register",
           label: "Sign Up",
-          icon: <Zap size={14} strokeWidth={2} />,
+          icon: <Zap size={14} strokeWidth={2.5} />,
         },
       ];
 
@@ -104,109 +130,87 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ── Floating Pill Navbar ── */}
       <div
         className="fixed top-0 left-0 right-0 z-50 flex justify-center"
-        style={{ padding: "14px 16px 0", ...NAV_STYLE }}
+        style={{ padding: "14px 16px 0", ...fonts.body }}
       >
         <motion.nav
           initial={{ y: -80, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           style={pillStyle(scrolled)}
-          className="w-full max-w-5xl px-3 py-2 flex items-center justify-between transition-all duration-300"
+          className="w-full max-w-5xl px-3 py-2.5 flex items-center justify-between"
         >
           {/* ── Logo ── */}
           <Link
             to="/"
-            className="flex items-center gap-2 group flex-shrink-0 pl-1"
+            className="flex items-center gap-2.5 group flex-shrink-0 pl-1"
           >
             <motion.div
               whileHover={{ rotate: [0, -8, 8, 0], scale: 1.08 }}
               transition={{ duration: 0.4 }}
-              className="w-8 h-8 rounded-2xl flex items-center justify-center shadow-md"
-              style={{
-                background: "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                boxShadow: "0 4px 12px rgba(255,77,0,0.35)",
-              }}
+              className="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0"
+              style={neumorphic.inset}
             >
-              <Utensils size={16} className="text-white" strokeWidth={2.5} />
+              <Utensils size={18} color={colors.accent} strokeWidth={2.5} />
             </motion.div>
-            <span className="font-bold text-gray-900 text-base tracking-tight hidden sm:block">
-              Quick<span style={{ color: "#ff4d00" }}>Bite</span>
+            <span className="font-bold text-[18px] tracking-tight hidden sm:block" style={{ color: colors.primary }}>
+              Quick<span style={{ color: colors.accent }}>Bite</span>
             </span>
           </Link>
 
           {/* ── Desktop Links ── */}
-          <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-            {navLinks.map((link) => (
-              <Link key={link.to} to={link.to}>
-                <motion.div
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                    isActive(link.to)
-                      ? "text-white"
-                      : "text-gray-500 hover:text-gray-800 hover:bg-black/[0.04]"
-                  }`}
-                  style={
-                    isActive(link.to)
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                          boxShadow: "0 4px 14px rgba(255,77,0,0.3)",
-                        }
-                      : {}
-                  }
-                >
-                  {link.icon}
-                  {link.label}
-                </motion.div>
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            {navLinks.map((link) => {
+              const active = isActive(link.to);
+              return (
+                <Link key={link.to} to={link.to}>
+                  <motion.div
+                    whileTap={{ scale: 0.96 }}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-semibold transition-all duration-300`}
+                    style={
+                      active 
+                        ? neumorphic.buttonRaised 
+                        : { color: colors.muted, background: 'transparent' }
+                    }
+                  >
+                    {link.icon}
+                    {link.label}
+                  </motion.div>
+                </Link>
+              )
+            })}
             {user?.role === "admin" && (
               <Link to="/admin">
                 <motion.div
-                  whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                    location.pathname.startsWith("/admin")
-                      ? "text-white"
-                      : "text-gray-500 hover:text-gray-800 hover:bg-black/[0.04]"
-                  }`}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-semibold transition-all duration-300`}
                   style={
                     location.pathname.startsWith("/admin")
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                          boxShadow: "0 4px 14px rgba(255,77,0,0.3)",
-                        }
-                      : {}
+                      ? neumorphic.buttonRaised 
+                      : { color: colors.muted, background: 'transparent' }
                   }
                 >
-                  <LayoutDashboard size={14} strokeWidth={2} /> Admin
+                  <LayoutDashboard size={14} strokeWidth={2.5} /> Admin
                 </motion.div>
               </Link>
             )}
           </div>
 
           {/* ── Right Actions ── */}
-          <div className="flex items-center gap-2 pr-1">
+          <div className="flex items-center gap-3 pr-1">
             {/* Cart */}
             {user && (
               <Link to="/cart">
                 <motion.div
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.92 }}
-                  className="relative w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                  style={{
-                    background: "rgba(0,0,0,0.04)",
-                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
-                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.92, ...neumorphic.inset }}
+                  className="relative w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                  style={neumorphic.raised}
                 >
                   <ShoppingCart
-                    size={17}
-                    className="text-gray-500"
+                    size={18}
+                    color={colors.primary}
                     strokeWidth={2}
                   />
                   <AnimatePresence>
@@ -216,8 +220,8 @@ export default function Navbar() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="absolute -top-0.5 -right-0.5 w-[17px] h-[17px] text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-                        style={{ background: "#ff4d00" }}
+                        className="absolute -top-1 -right-1 w-5 h-5 text-white text-[11px] font-bold rounded-full flex items-center justify-center border-2 border-[#F0E8DC]"
+                        style={{ background: colors.accent }}
                       >
                         {totalItems}
                       </motion.span>
@@ -231,35 +235,29 @@ export default function Navbar() {
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setDropdown(!dropdown)}
-                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-full transition-all"
-                  style={{
-                    background: "rgba(0,0,0,0.04)",
-                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
-                  }}
+                  className="flex items-center gap-3 px-3 py-2 rounded-full transition-all"
+                  style={neumorphic.raised}
                 >
-                  <div className="w-6 h-6 rounded-full overflow-hidden ring-2 ring-white shadow-sm">
+                  <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center" style={neumorphic.inset}>
                     {user.profile_image_url ? (
                       <img
                         src={user.profile_image_url}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover p-0.5 rounded-full"
                         alt="avatar"
                       />
                     ) : (
                       <div
-                        className="w-full h-full flex items-center justify-center text-[11px] font-bold text-white"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                        }}
+                        className="w-full h-full flex items-center justify-center text-[11px] font-bold"
+                        style={{ color: colors.accent }}
                       >
                         {user.name?.[0]?.toUpperCase()}
                       </div>
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-gray-700 hidden sm:block pr-0.5">
+                  <span className="text-[14px] font-semibold hidden sm:block" style={{ color: colors.primary }}>
                     {user.name?.split(" ")[0]}
                   </span>
                   <motion.div
@@ -267,8 +265,8 @@ export default function Navbar() {
                     transition={{ duration: 0.2 }}
                   >
                     <ChevronDown
-                      size={13}
-                      className="text-gray-400"
+                      size={14}
+                      color={colors.muted}
                       strokeWidth={2.5}
                     />
                   </motion.div>
@@ -281,27 +279,24 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.93 }}
                       transition={{ duration: 0.18, ease: "easeOut" }}
-                      className="absolute right-0 top-full mt-3 w-48 overflow-hidden"
+                      className="absolute right-0 top-full mt-4 w-52 overflow-hidden py-2"
                       style={{
-                        borderRadius: 18,
-                        background: "rgba(255,255,255,0.95)",
-                        backdropFilter: "blur(20px)",
-                        border: "1.5px solid rgba(255,255,255,0.9)",
-                        boxShadow:
-                          "0 16px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)",
+                        borderRadius: '24px',
+                        ...neumorphic.raised,
+                        zIndex: 100
                       }}
                     >
-                      <div className="p-1.5">
+                      <div className="px-2">
                         {[
                           {
                             to: "/profile",
-                            icon: <User size={14} strokeWidth={2} />,
-                            label: "Profile",
+                            icon: <User size={15} strokeWidth={2.5} />,
+                            label: "My Profile",
                           },
                           {
                             to: "/orders",
-                            icon: <ClipboardList size={14} strokeWidth={2} />,
-                            label: "My Orders",
+                            icon: <ClipboardList size={15} strokeWidth={2.5} />,
+                            label: "Order History",
                           },
                         ].map((item) => (
                           <Link
@@ -310,29 +305,27 @@ export default function Navbar() {
                             onClick={() => setDropdown(false)}
                           >
                             <motion.div
-                              whileHover={{
-                                backgroundColor: "rgba(255,77,0,0.06)",
-                                x: 2,
-                              }}
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 transition-colors cursor-pointer"
+                              whileHover={{ scale: 0.98, ...neumorphic.inset }}
+                              className="flex items-center gap-3 px-4 py-3 rounded-[16px] text-[14px] font-semibold transition-all mb-1"
+                              style={{ color: colors.primary }}
                             >
-                              <span className="text-gray-400">{item.icon}</span>
+                              <span style={{ color: colors.accent }}>{item.icon}</span>
                               {item.label}
                             </motion.div>
                           </Link>
                         ))}
                       </div>
-                      <div className="mx-3 border-t border-gray-100" />
-                      <div className="p-1.5">
+                      
+                      <div className="mx-4 my-1 opacity-20 border-t" style={{ borderColor: colors.muted }} />
+                      
+                      <div className="px-2">
                         <motion.button
-                          whileHover={{
-                            backgroundColor: "rgba(239,68,68,0.06)",
-                            x: 2,
-                          }}
+                          whileHover={{ scale: 0.98, ...neumorphic.inset }}
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-[16px] text-[14px] font-bold transition-all mt-1"
+                          style={{ color: colors.error }}
                         >
-                          <LogOut size={14} strokeWidth={2} /> Logout
+                          <LogOut size={15} strokeWidth={2.5} /> Logout Account
                         </motion.button>
                       </div>
                     </motion.div>
@@ -342,32 +335,22 @@ export default function Navbar() {
             ) : (
               <Link to="/register" className="hidden md:block">
                 <motion.div
-                  whileHover={{
-                    scale: 1.04,
-                    boxShadow: "0 8px 24px rgba(255,77,0,0.4)",
-                  }}
+                  whileHover={{ y: -1, boxShadow: neumorphic.buttonRaised.boxShadow.replace('0.3', '0.45') }}
                   whileTap={{ scale: 0.96 }}
-                  className="px-4 py-2 rounded-full text-sm font-bold text-white"
-                  style={{
-                    background: "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                    boxShadow: "0 4px 14px rgba(255,77,0,0.3)",
-                  }}
+                  className="px-6 py-2.5 rounded-full text-[14px] font-bold text-white flex items-center gap-2"
+                  style={neumorphic.buttonRaised}
                 >
-                  Get Started
+                  <Zap size={14} fill="currentColor" /> Let's Go
                 </motion.div>
               </Link>
             )}
 
             {/* Mobile hamburger */}
             <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
+              whileTap={{ scale: 0.92, ...neumorphic.inset }}
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-gray-600 transition-all"
-              style={{
-                background: "rgba(0,0,0,0.04)",
-                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
-              }}
+              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              style={neumorphic.raised}
             >
               <AnimatePresence mode="wait">
                 {mobileOpen ? (
@@ -377,8 +360,9 @@ export default function Navbar() {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: 90, opacity: 0 }}
                     transition={{ duration: 0.15 }}
+                    style={{ color: colors.primary }}
                   >
-                    <X size={18} strokeWidth={2.5} />
+                    <X size={20} strokeWidth={2.5} />
                   </motion.div>
                 ) : (
                   <motion.div
@@ -387,8 +371,9 @@ export default function Navbar() {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.15 }}
+                    style={{ color: colors.primary }}
                   >
-                    <Menu size={18} strokeWidth={2.5} />
+                    <Menu size={20} strokeWidth={2.5} />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -407,11 +392,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-40 md:hidden"
-              style={{
-                background: "rgba(0,0,0,0.15)",
-                backdropFilter: "blur(4px)",
-              }}
+              className="fixed inset-0 z-40 md:hidden bg-black/10 backdrop-blur-sm"
             />
 
             {/* Drawer pill */}
@@ -420,93 +401,85 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 340, damping: 28 }}
-              className="fixed top-20 left-4 right-4 z-40 md:hidden p-3"
+              className="fixed top-24 left-4 right-4 z-40 md:hidden p-4"
               style={{
-                borderRadius: 24,
-                background: "rgba(255,255,255,0.97)",
-                backdropFilter: "blur(24px)",
-                border: "1.5px solid rgba(255,255,255,0.95)",
-                boxShadow:
-                  "0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)",
-                fontFamily: "'Outfit', sans-serif",
+                borderRadius: '32px',
+                ...neumorphic.raised,
+                ...fonts.body,
               }}
             >
               {/* Links */}
-              <div className="flex flex-col gap-1 mb-2">
-                {navLinks.map((link, i) => (
-                  <motion.div
-                    key={link.to}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                  >
-                    <Link to={link.to}>
-                      <motion.div
-                        whileHover={{ x: 4 }}
-                        className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all ${
-                          isActive(link.to)
-                            ? "text-white"
-                            : "text-gray-600 hover:bg-black/[0.04]"
-                        }`}
-                        style={
-                          isActive(link.to)
-                            ? {
-                                background:
-                                  "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                                boxShadow: "0 4px 14px rgba(255,77,0,0.3)",
-                              }
-                            : {}
-                        }
-                      >
-                        {link.icon} {link.label}
-                      </motion.div>
-                    </Link>
-                  </motion.div>
-                ))}
+              <div className="flex flex-col gap-2 mb-4">
+                {navLinks.map((link, i) => {
+                  const active = isActive(link.to);
+                  return (
+                    <motion.div
+                      key={link.to}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <Link to={link.to}>
+                        <motion.div
+                          whileTap={{ scale: 0.96 }}
+                          className={`flex items-center gap-3 px-5 py-4 rounded-[20px] text-[15px] font-semibold transition-all`}
+                          style={
+                            active 
+                              ? neumorphic.buttonRaised 
+                              : { ...neumorphic.inset, color: colors.primary }
+                          }
+                        >
+                          <span style={{ color: active ? '#fff' : colors.accent }}>{link.icon}</span> 
+                          {link.label}
+                        </motion.div>
+                      </Link>
+                    </motion.div>
+                  )
+                })}
                 {user?.role === "admin" && (
                   <Link to="/admin">
                     <motion.div
-                      whileHover={{ x: 4 }}
-                      className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-semibold text-orange-500"
+                      whileTap={{ scale: 0.96 }}
+                      className="flex items-center gap-3 px-5 py-4 rounded-[20px] text-[15px] font-bold transition-all"
+                      style={
+                         location.pathname.startsWith("/admin")
+                          ? neumorphic.buttonRaised
+                          : { ...neumorphic.inset, color: colors.primary }
+                      }
                     >
-                      <LayoutDashboard size={15} /> Admin Dashboard
+                      <span style={{ color: location.pathname.startsWith("/admin") ? '#fff' : colors.accent }}><LayoutDashboard size={15} strokeWidth={2.5} /></span> 
+                      Admin Dashboard
                     </motion.div>
                   </Link>
                 )}
               </div>
 
               {/* Divider */}
-              {user && <div className="border-t border-gray-100 mb-2" />}
+              {user && <div className="mx-4 mb-4 opacity-10 border-t border-black" />}
 
               {/* Logout */}
               {user && (
                 <motion.button
-                  whileHover={{ x: 4 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.96, ...neumorphic.inset }}
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-semibold text-red-500"
+                  className="w-full flex items-center justify-center gap-3 px-5 py-4 rounded-[20px] text-[15px] font-bold transition-all bg-transparent"
+                  style={{ color: colors.error }}
                 >
-                  <LogOut size={15} strokeWidth={2} /> Logout
+                  <LogOut size={16} strokeWidth={2.5} /> Logout
                 </motion.button>
               )}
 
               {/* Get started for guests */}
               {!user && (
-                <>
-                  <div className="border-t border-gray-100 mb-2" />
-                  <Link to="/register">
-                    <motion.div
-                      whileTap={{ scale: 0.97 }}
-                      className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl text-sm font-bold text-white"
-                      style={{
-                        background: "linear-gradient(135deg, #ff4d00, #ff8c42)",
-                        boxShadow: "0 4px 14px rgba(255,77,0,0.3)",
-                      }}
-                    >
-                      <Zap size={15} strokeWidth={2.5} /> Get Started
-                    </motion.div>
-                  </Link>
-                </>
+                <Link to="/register" className="mt-2 block">
+                  <motion.div
+                    whileTap={{ scale: 0.96 }}
+                    className="flex items-center justify-center gap-2 px-5 py-4 rounded-[20px] text-[15px] font-bold"
+                    style={neumorphic.buttonRaised}
+                  >
+                    <Zap size={16} strokeWidth={2.5} fill="currentColor" /> Join QuickBite
+                  </motion.div>
+                </Link>
               )}
             </motion.div>
           </>
