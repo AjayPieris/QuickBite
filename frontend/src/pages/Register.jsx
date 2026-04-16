@@ -5,6 +5,36 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Utensils, Zap, Star, Clock, Camera } from 'lucide-react'
 import api from '../api/axios'
 
+const FOOD_IMAGE = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=80'
+
+const colors = {
+  primary: '#2C1A0E',
+  muted: '#A08060',
+  accent: '#E8732A',
+  bg: '#F0E8DC',
+  success: '#5AAB5E',
+  error: '#E85A2A',
+}
+
+const neumorphic = {
+  raised: {
+    background: colors.bg,
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85)',
+    border: 'none',
+  },
+  inset: {
+    background: colors.bg,
+    boxShadow: 'inset 5px 5px 12px rgba(180,130,90,0.26), inset -5px -5px 12px rgba(255,255,255,0.78)',
+    border: 'none',
+  },
+  buttonRaised: {
+    background: 'linear-gradient(135deg, #E8732A, #C87820)',
+    boxShadow: '6px 6px 16px rgba(180,130,90,0.32), -6px -6px 16px rgba(255,255,255,0.85), 0 4px 12px rgba(232,115,42,0.3)',
+    border: 'none',
+    color: '#ffffff'
+  }
+}
+
 // Password strength indicator
 function PasswordStrength({ password }) {
   const getStrength = (pw) => {
@@ -17,27 +47,29 @@ function PasswordStrength({ password }) {
   }
   const strength = getStrength(password)
   const labels   = ['', 'Weak', 'Fair', 'Almost there...', 'Strong']
-  const colors   = ['', '#ef4444', '#f97316', '#f59e0b', '#22c55e']
+  const strengthColors = ['', colors.error, '#F5A623', '#F5A623', colors.success]
+  
   if (!password) return null
   return (
-    <div className="mt-2">
-      <div className="flex gap-1 mb-1">
+    <div className="mt-4 px-2">
+      <div className="flex gap-2 mb-2">
         {[1, 2, 3, 4].map(i => (
           <div
             key={i}
-            className="h-1 flex-1 rounded-full transition-all duration-300"
-            style={{ background: i <= strength ? colors[strength] : '#f0f0f0' }}
+            className="h-[6px] flex-1 rounded-full transition-all duration-300"
+            style={{ 
+              background: i <= strength ? strengthColors[strength] : 'transparent',
+              boxShadow: i <= strength ? 'none' : 'inset 2px 2px 5px rgba(180,130,90,0.2), inset -2px -2px 5px rgba(255,255,255,0.7)'
+            }}
           />
         ))}
       </div>
-      <p className="text-xs font-medium" style={{ color: colors[strength] }}>
-        Strength: <span className="font-semibold">{labels[strength]}</span>
+      <p className="text-[12px] font-bold" style={{ color: strengthColors[strength] || colors.muted }}>
+        Strength: <span className="font-extrabold">{labels[strength]}</span>
       </p>
     </div>
   )
 }
-
-const FOOD_IMAGE = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=80'
 
 export default function Register() {
   const [form, setForm]     = useState({ name: '', email: '', password: '', role: 'user' })
@@ -87,7 +119,7 @@ export default function Register() {
   return (
     <div className="min-h-screen flex overflow-hidden" style={{ fontFamily: "'Outfit', sans-serif" }}>
 
-      {/* ── Left Panel ── */}
+      {/* ── Left Panel (Untouched) ── */}
       <motion.div
         custom="left"
         variants={panelVariants}
@@ -98,18 +130,14 @@ export default function Register() {
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${FOOD_IMAGE}')` }} />
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-black/85" />
 
-        {/* Logo */}
         <motion.div
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="relative z-10 flex items-center gap-2.5"
         >
-         
-          
         </motion.div>
 
-        {/* Hero text & features */}
         <div className="relative z-10">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
@@ -148,22 +176,22 @@ export default function Register() {
         </div>
       </motion.div>
 
-      {/* ── Right Panel ── */}
+      {/* ── Right Panel (Neumorphic) ── */}
       <motion.div
         custom="right"
         variants={panelVariants}
         initial="hidden"
         animate="visible"
-        className="flex-1 bg-white flex flex-col overflow-hidden"
+        className="flex-1 flex flex-col overflow-hidden"
+        style={{ background: colors.bg }}
       >
-        {/* Form area */}
         <div className="flex-1 flex justify-center px-8 pt-24 lg:pt-28 pb-4 overflow-hidden">
           <div className="w-full max-w-md">
 
             {/* Heading */}
-            <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible" className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">Join QuickBite</h1>
-              <p className="text-sm font-medium" style={{ color: '#ea580c' }}>
+            <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible" className="mb-8 text-center max-w-sm mx-auto">
+              <h1 className="text-[32px] font-bold mb-2 tracking-tight" style={{ color: colors.primary }}>Join QuickBite</h1>
+              <p className="text-[14px] font-medium" style={{ color: colors.muted }}>
                 Enter your details to start your culinary journey.
               </p>
             </motion.div>
@@ -175,68 +203,74 @@ export default function Register() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mb-5 px-4 py-3 rounded-xl text-sm text-red-600 bg-red-50 border border-red-100 flex items-center gap-2"
+                  className="mb-5 overflow-hidden"
                 >
-                  <span className="text-red-400">⊘</span> {error}
+                  <div className="px-5 py-4 rounded-[18px] text-[14px] font-bold flex items-center gap-3" style={{ ...neumorphic.inset, color: colors.error }}>
+                    <span>⊘</span> {error}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
 
               {/* Full Name */}
               <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible">
-                <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-widest">Full Name</label>
+                <label className="block text-[12px] font-bold mb-2 uppercase tracking-widest pl-2" style={{ color: colors.muted }}>Full Name</label>
                 <div className="relative">
-                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" strokeWidth={2} />
+                  <User size={18} className="absolute left-5 top-1/2 -translate-y-1/2" style={{ color: colors.muted }} strokeWidth={2} />
                   <input
                     type="text"
                     placeholder="Gordon Ramsay"
                     value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
                     required
-                    className="auth-input pl-11"
+                    className="w-full outline-none font-medium text-[15px] rounded-[20px] px-5 py-4 pl-12 transition-all focus:outline-none"
+                    style={{ ...neumorphic.inset, color: colors.primary }}
                   />
                 </div>
               </motion.div>
 
               {/* Email */}
               <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
-                <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-widest">Email Address</label>
+                <label className="block text-[12px] font-bold mb-2 uppercase tracking-widest pl-2" style={{ color: colors.muted }}>Email Address</label>
                 <div className="relative">
-                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" strokeWidth={2} />
+                  <Mail size={18} className="absolute left-5 top-1/2 -translate-y-1/2" style={{ color: colors.muted }} strokeWidth={2} />
                   <input
                     type="email"
                     placeholder="chef@quickbite.com"
                     value={form.email}
                     onChange={e => setForm({ ...form, email: e.target.value })}
                     required
-                    className="auth-input pl-11"
+                    className="w-full outline-none font-medium text-[15px] rounded-[20px] px-5 py-4 pl-12 transition-all focus:outline-none"
+                    style={{ ...neumorphic.inset, color: colors.primary }}
                   />
                 </div>
               </motion.div>
 
               {/* Password */}
               <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible">
-                <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-widest">Password</label>
+                <label className="block text-[12px] font-bold mb-2 uppercase tracking-widest pl-2" style={{ color: colors.muted }}>Password</label>
                 <div className="relative">
-                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" strokeWidth={2} />
+                  <Lock size={18} className="absolute left-5 top-1/2 -translate-y-1/2" style={{ color: colors.muted }} strokeWidth={2} />
                   <input
                     type={showPw ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={form.password}
                     onChange={e => setForm({ ...form, password: e.target.value })}
                     required
-                    className="auth-input pl-11 pr-12"
+                    className="w-full outline-none font-medium text-[15px] rounded-[20px] px-5 py-4 pl-12 pr-14 transition-all focus:outline-none"
+                    style={{ ...neumorphic.inset, color: colors.primary }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPw(!showPw)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors"
+                    className="absolute right-5 top-1/2 -translate-y-1/2 transition-colors hover:opacity-75"
+                    style={{ color: colors.accent }}
                   >
                     {showPw
-                      ? <EyeOff size={16} strokeWidth={2} />
-                      : <Eye size={16} strokeWidth={2} />
+                      ? <EyeOff size={18} strokeWidth={2} />
+                      : <Eye size={18} strokeWidth={2} />
                     }
                   </button>
                 </div>
@@ -244,14 +278,14 @@ export default function Register() {
               </motion.div>
 
               {/* Submit */}
-              <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="pt-2">
+              <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="pt-4">
                 <motion.button
                   type="submit"
                   disabled={loading}
-                  whileHover={{ scale: 1.015, boxShadow: '0 10px 32px rgba(194,65,12,0.35)' }}
+                  whileHover={{ y: -1, boxShadow: neumorphic.buttonRaised.boxShadow.replace('0.3', '0.45') }}
                   whileTap={{ scale: 0.975 }}
-                  className="w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2.5 disabled:opacity-70"
-                  style={{ background: 'linear-gradient(135deg, #c2410c, #ea580c, #fb923c)', fontFamily: "'Outfit',sans-serif" }}
+                  className="w-full py-4 rounded-[20px] font-bold text-[16px] flex items-center justify-center gap-2.5 disabled:opacity-70 transition-all"
+                  style={neumorphic.buttonRaised}
                 >
                   {loading ? (
                     <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
@@ -265,20 +299,20 @@ export default function Register() {
               </motion.div>
 
               {/* OR */}
-              <motion.div custom={6} variants={fieldVariants} initial="hidden" animate="visible" className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-gray-100" />
-                <span className="text-xs text-gray-300 font-semibold tracking-wider">OR</span>
-                <div className="flex-1 h-px bg-gray-100" />
+              <motion.div custom={6} variants={fieldVariants} initial="hidden" animate="visible" className="flex items-center gap-3 pt-2">
+                <div className="flex-1 h-px" style={{ background: 'rgba(180,130,90,0.15)' }} />
+                <span className="text-[11px] font-bold tracking-widest px-2" style={{ color: colors.muted }}>OR</span>
+                <div className="flex-1 h-px" style={{ background: 'rgba(180,130,90,0.15)' }} />
               </motion.div>
 
               {/* Google */}
               <motion.div custom={7} variants={fieldVariants} initial="hidden" animate="visible">
                 <motion.button
                   type="button"
-                  whileHover={{ backgroundColor: '#f9fafb', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-3.5 rounded-2xl text-gray-600 font-semibold text-sm flex items-center justify-center gap-3 bg-white transition-all"
-                  style={{ border: '1.5px solid #f0f0f0' }}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98, ...neumorphic.inset }}
+                  className="w-full py-4 rounded-[20px] font-bold text-[15px] flex items-center justify-center gap-3 transition-all"
+                  style={{ ...neumorphic.raised, color: colors.primary }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -291,17 +325,16 @@ export default function Register() {
               </motion.div>
             </form>
 
-            {/* Sign in link */}
-            <motion.p custom={8} variants={fieldVariants} initial="hidden" animate="visible" className="text-center text-sm text-gray-400 mt-6">
+            <motion.p custom={8} variants={fieldVariants} initial="hidden" animate="visible" className="text-center text-[14px] font-medium mt-8" style={{ color: colors.muted }}>
               Already have an account?{' '}
-              <Link to="/login" className="font-bold hover:opacity-75 transition-opacity" style={{ color: '#ea580c' }}>
+              <Link to="/login" className="font-bold transition-opacity hover:opacity-75 ml-1" style={{ color: colors.accent }}>
                 Log in
               </Link>
             </motion.p>
 
-            <motion.div custom={9} variants={fieldVariants} initial="hidden" animate="visible" className="flex justify-center gap-4 mt-4">
-              <span className="text-xs text-gray-300 hover:text-gray-500 cursor-pointer transition-colors">Privacy Policy</span>
-              <span className="text-xs text-gray-300 hover:text-gray-500 cursor-pointer transition-colors">Terms of Service</span>
+            <motion.div custom={9} variants={fieldVariants} initial="hidden" animate="visible" className="flex justify-center gap-5 mt-5">
+              <span className="text-[12px] font-bold uppercase tracking-wider cursor-pointer hover:opacity-75 transition-opacity" style={{ color: colors.muted }}>Privacy Policy</span>
+              <span className="text-[12px] font-bold uppercase tracking-wider cursor-pointer hover:opacity-75 transition-opacity" style={{ color: colors.muted }}>Terms of Service</span>
             </motion.div>
           </div>
         </div>
