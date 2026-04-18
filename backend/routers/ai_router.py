@@ -18,15 +18,20 @@ router = APIRouter(prefix="/ai", tags=["AI"])
 
 @router.get("/insights")
 def ai_insights(db: Session = Depends(get_db)):
-    # Find the busiest hours (group orders by hour)
-    busy_hours_data = (
-        db.query(func.extract('hour', models.Order.created_at).label('hour'), func.count().label('count'))
-        .group_by('hour')
-        .order_by(func.count().desc())
-        .limit(3)
-        .all()
-    )
-    busy_hours = [{"hour": int(row.hour), "orders": row.count} for row in busy_hours_data]
+    # Find the busiest hours (adjusting +5:30 for local SLST timezone)
+    import datetime
+    all_orders = db.query(models.Order.created_at).all()
+    hour_counts = {}
+    for row in all_orders:
+        if not row.created_at: continue
+        # created_at is naive UTC from models.py
+        sl_time = row.created_at + datetime.timedelta(hours=5, minutes=30)
+        h = sl_time.hour
+        hour_counts[h] = hour_counts.get(h, 0) + 1
+        
+    sorted_hours = sorted(hour_counts.items(), key=lambda x: x[1], reverse=True)[:6]
+    sorted_hours.sort(key=lambda x: x[0])  # Sort chronologically for the X-axis graph
+    busy_hours = [{"hour": h, "orders": c} for h, c in sorted_hours]
 
     # Find most ordered foods
     popular_foods = (

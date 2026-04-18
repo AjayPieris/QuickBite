@@ -55,6 +55,8 @@ def delete_item(item_id: int, db: Session = Depends(get_db), admin=Depends(auth.
     item = db.query(models.MenuItem).filter(models.MenuItem.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
+    # Delete linked order_items first to satisfy MySQL foreign key constraints
+    db.query(models.OrderItem).filter(models.OrderItem.menu_id == item_id).delete()
     db.delete(item)
     db.commit()
     return {"message": "Item deleted"}

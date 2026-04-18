@@ -9,8 +9,15 @@ load_dotenv()  # Load variables from .env file
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create the database engine (this is like opening a connection to the DB)
-engine = create_engine(DATABASE_URL)
+# MySQL-optimized engine: pool_pre_ping reconnects dropped connections automatically
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,          # Detect and recover stale connections
+    pool_recycle=1800,           # Recycle connections every 30 mins
+    pool_size=10,                # Keep 10 connections ready
+    max_overflow=20,             # Allow up to 20 extra connections under load
+    connect_args={"charset": "utf8mb4"},
+)
 
 # Each request gets its own database session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

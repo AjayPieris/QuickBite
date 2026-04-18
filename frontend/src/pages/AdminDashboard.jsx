@@ -200,12 +200,19 @@ function DashboardTab() {
   }, [])
 
   const updateStatus = async (id, status) => {
-    try {
-      await api.put(`/orders/${id}/status?status=${status}`)
-    } catch { /* ignore */ }
+    // Optimistic UI update: instantly update state to prevent input lag
+    const originalOrders = [...orders]
     const updated = orders.map(o => o.id === id ? { ...o, status } : o)
     setOrders(updated)
     globalOrders = updated
+
+    try {
+      await api.put(`/orders/${id}/status?status=${status}`)
+    } catch {
+      // Revert on failure
+      setOrders(originalOrders)
+      globalOrders = originalOrders
+    }
   }
 
   // Calculate KPIs all-time instead of just today to ensure the dashboard looks active for testing
@@ -387,9 +394,18 @@ function MenuTab() {
   }
 
   const handleDelete = async (id) => {
-    const filtered = items.filter(i => i.id !== id);
-    setItems(filtered);
-    globalMenu = filtered;
+    // Optimistic update
+    const original = [...items]
+    const filtered = items.filter(i => i.id !== id)
+    setItems(filtered)
+    globalMenu = filtered
+    try {
+      await api.delete(`/menu/${id}`)
+    } catch {
+      // Revert if backend fails
+      setItems(original)
+      globalMenu = original
+    }
   }
 
   return (
@@ -576,9 +592,19 @@ function OrdersTab() {
   }, [])
 
   const updateStatus = async (id, status) => {
-    const updated = orders.map(o => o.id === id ? { ...o, status } : o);
-    setOrders(updated);
-    globalOrders = updated;
+    // Optimistic UI update for instantaneous responsiveness 
+    const originalOrders = [...orders]
+    const updated = orders.map(o => o.id === id ? { ...o, status } : o)
+    setOrders(updated)
+    globalOrders = updated
+    
+    try {
+      await api.put(`/orders/${id}/status?status=${status}`)
+    } catch {
+      // Revert if the server fails
+      setOrders(originalOrders)
+      globalOrders = originalOrders
+    }
   }
 
   const filtered = orders.filter(o => filter === 'all' ? true : o.status === filter)
