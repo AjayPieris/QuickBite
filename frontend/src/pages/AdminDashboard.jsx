@@ -163,8 +163,14 @@ function KpiCard({ icon: Icon, label, value, trend, color }) {
 function DashboardTab() {
   const [orders, setOrders] = useState([])
 
+  const DEMO_ORDERS = [
+    { id: 101, user: { name: 'Alice Smith' }, items: [{ menu_item: { name: 'Chicken Fried Rice' }, quantity: 2 }], total_price: 700, status: 'pending', created_at: new Date().toISOString(), pickup_time: new Date(Date.now() + 30*60000).toISOString() },
+    { id: 102, user: { name: 'Bob Johnson' }, items: [{ menu_item: { name: 'Beef Kottu' }, quantity: 1 }], total_price: 420, status: 'preparing', created_at: new Date().toISOString(), pickup_time: new Date(Date.now() + 15*60000).toISOString() },
+    { id: 103, user: { name: 'Charlie Dave' }, items: [{ menu_item: { name: 'Mango Juice' }, quantity: 3 }], total_price: 240, status: 'ready', created_at: new Date().toISOString(), pickup_time: new Date(Date.now() - 5*60000).toISOString() },
+  ]
+
   useEffect(() => {
-    api.get('/orders').then(r => setOrders(r.data)).catch(() => {})
+    api.get('/orders').then(r => setOrders(r.data)).catch(() => setOrders(DEMO_ORDERS))
   }, [])
 
   const updateStatus = async (id, status) => {
@@ -314,8 +320,19 @@ function MenuTab() {
   const [imageFile, setImageFile] = useState(null)
   const [saving, setSaving] = useState(false)
 
+  const DEMO_ITEMS = [
+    { id: 1, name: 'Chicken Fried Rice', price: 350, category: 'Rice', image_url: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=400' },
+    { id: 2, name: 'Beef Kottu', price: 420, category: 'FastFood', image_url: 'https://images.unsplash.com/photo-1544025162-811cce66eb5f?auto=format&fit=crop&q=80&w=400' },
+    { id: 3, name: 'Vegetable Noodles', price: 280, category: 'Noodles', image_url: 'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=80&w=400' },
+    { id: 4, name: 'Fish Curry Rice', price: 390, category: 'Rice', image_url: 'https://images.unsplash.com/photo-1589302168068-964664d93cb0?auto=format&fit=crop&q=80&w=400' },
+    { id: 5, name: 'Egg Sandwich', price: 120, category: 'Snacks', image_url: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&q=80&w=400' },
+    { id: 6, name: 'Mango Juice', price: 80, category: 'Drinks', image_url: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
+    { id: 7, name: 'Dhal Curry Plate', price: 220, category: 'Rice', image_url: 'https://images.unsplash.com/photo-1627883216892-0b73df727aa4?auto=format&fit=crop&q=80&w=400' },
+    { id: 8, name: 'Chicken Burger', price: 480, category: 'FastFood', image_url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400' },
+  ]
+
   useEffect(() => {
-    api.get('/menu').then(r => setItems(r.data)).catch(() => {}).finally(() => setLoading(false))
+    api.get('/menu').then(r => setItems(r.data)).catch(() => setItems(DEMO_ITEMS)).finally(() => setLoading(false))
   }, [])
 
   const handleAdd = async (e) => {
@@ -518,8 +535,14 @@ function OrdersTab() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter]   = useState('all')
 
+  const DEMO_ORDERS = [
+    { id: 101, user: { name: 'Alice Smith' }, items: [{ menu_item: { name: 'Chicken Fried Rice' }, quantity: 2 }], total_price: 700, status: 'pending', created_at: new Date().toISOString(), pickup_time: new Date(Date.now() + 30*60000).toISOString() },
+    { id: 102, user: { name: 'Bob Johnson' }, items: [{ menu_item: { name: 'Beef Kottu' }, quantity: 1 }], total_price: 420, status: 'preparing', created_at: new Date().toISOString(), pickup_time: new Date(Date.now() + 15*60000).toISOString() },
+    { id: 103, user: { name: 'Charlie Dave' }, items: [{ menu_item: { name: 'Mango Juice' }, quantity: 3 }], total_price: 240, status: 'ready', created_at: new Date().toISOString(), pickup_time: new Date(Date.now() - 5*60000).toISOString() },
+  ]
+
   useEffect(() => {
-    api.get('/orders').then(r => setOrders(r.data)).catch(() => {}).finally(() => setLoading(false))
+    api.get('/orders').then(r => setOrders(r.data)).catch(() => setOrders(DEMO_ORDERS)).finally(() => setLoading(false))
   }, [])
 
   const updateStatus = async (id, status) => {
@@ -613,10 +636,28 @@ function AITab() {
   const [loading, setLoading]   = useState(true)
   const [typedText, setTypedText] = useState('')
 
+  const DEMO_INSIGHTS = {
+    ai_summary: 'Based on current mock data, the restaurant shows a steady pattern of orders. FastFood items like Burgers and Kottu are performing well. Consider preparing more ingredients for peak hours around 1pm and 7pm.',
+    busy_hours: [
+      { hour: 11, orders: 12 },
+      { hour: 12, orders: 25 },
+      { hour: 13, orders: 30 },
+      { hour: 18, orders: 15 },
+      { hour: 19, orders: 28 },
+      { hour: 20, orders: 22 }
+    ],
+    popular_foods: [
+      { name: 'Chicken Fried Rice', total_ordered: 45 },
+      { name: 'Beef Kottu', total_ordered: 38 },
+      { name: 'Chicken Burger', total_ordered: 30 },
+      { name: 'Mango Juice', total_ordered: 25 }
+    ]
+  }
+
   useEffect(() => {
     api.get('/ai/insights')
       .then(res => setInsights(res.data))
-      .catch(() => setInsights({ ai_summary: 'Unable to connect to AI service.' }))
+      .catch(() => setInsights(DEMO_INSIGHTS))
       .finally(() => setLoading(false))
   }, [])
 

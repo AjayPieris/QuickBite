@@ -61,7 +61,12 @@ const DEMO_ORDERS = [
     pickup_time: new Date().toISOString(),
     total_price: 760,
     status: "ready",
-    items: [],
+    items: [
+      {
+        quantity: 2,
+        menu_item: { name: 'Chicken Fried Rice', price: 350, image_url: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=400' }
+      }
+    ],
   },
   {
     id: 102,
@@ -69,7 +74,12 @@ const DEMO_ORDERS = [
     pickup_time: new Date(Date.now() - 86400000).toISOString(),
     total_price: 480,
     status: "preparing",
-    items: [],
+    items: [
+      {
+        quantity: 1,
+        menu_item: { name: 'Chicken Burger', price: 480, image_url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400' }
+      }
+    ],
   },
   {
     id: 103,
@@ -77,7 +87,12 @@ const DEMO_ORDERS = [
     pickup_time: new Date(Date.now() - 172800000).toISOString(),
     total_price: 320,
     status: "pending",
-    items: [],
+    items: [
+      {
+        quantity: 4,
+        menu_item: { name: 'Mango Juice', price: 80, image_url: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' }
+      }
+    ],
   },
 ];
 
