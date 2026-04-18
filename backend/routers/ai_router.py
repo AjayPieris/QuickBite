@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from database import get_db
 import models
-import google.generativeai as genai
+from google import genai
 import os
 from dotenv import load_dotenv
 
@@ -12,7 +12,9 @@ load_dotenv()
 # The .env file has Gemini__ApiKey
 GEMINI_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("Gemini__ApiKey")
 if GEMINI_KEY:
-    genai.configure(api_key=GEMINI_KEY)
+    client = genai.Client(api_key=GEMINI_KEY)
+else:
+    client = None
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
@@ -47,11 +49,13 @@ def ai_insights(db: Session = Depends(get_db)):
     # Get AI generated summary
     ai_text = "Not enough data yet for insights. Have some orders placed to view AI insights."
     if busy_hours or popular:
-        if GEMINI_KEY:
+        if client:
             try:
-                model = genai.GenerativeModel("gemini-1.5-flash")
                 prompt = f"You are a canteen manager AI. Based on this data, give a short, friendly 2-3 sentence insight: Busy hours: {busy_hours}, Popular foods: {popular_foods}"
-                response = model.generate_content(prompt)
+                response = client.models.generate_content(
+                    model='gemini-1.5-flash',
+                    contents=prompt,
+                )
                 ai_text = response.text
             except Exception as e:
                 ai_text = f"Insights temporarily unavailable. (Data: {len(busy_hours)} busy hours, {len(popular_foods)} top items)"
