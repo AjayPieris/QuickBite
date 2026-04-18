@@ -14,10 +14,15 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('qb_token')
     if (token) {
-      api.get('/users/me')
-        .then(res => setUser(res.data))
-        .catch(() => localStorage.removeItem('qb_token'))
-        .finally(() => setLoading(false))
+      if (token === 'demo_token') {
+        setUser({ id: 999, name: 'Demo User', role: 'user' })
+        setLoading(false)
+      } else {
+        api.get('/users/me')
+          .then(res => setUser(res.data))
+          .catch(() => localStorage.removeItem('qb_token'))
+          .finally(() => setLoading(false))
+      }
     } else {
       setLoading(false)
     }

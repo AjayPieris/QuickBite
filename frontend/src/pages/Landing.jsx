@@ -1,7 +1,8 @@
 // src/pages/Landing.jsx
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
+import { useAuth } from '../context/AuthContext'
 
 // Floating food particle
 function Particle({ emoji, style }) {
@@ -90,6 +91,14 @@ const FEATURES = [
 export default function Landing() {
   const featuresRef = useRef(null)
   const featuresInView = useInView(featuresRef, { once: true, margin: '-80px' })
+  const navigate = useNavigate()
+  const { setUser } = useAuth()
+
+  const startDemo = () => {
+    localStorage.setItem('qb_token', 'demo_token')
+    setUser({ id: 999, name: 'Demo User', role: 'user' })
+    navigate('/')
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden">
@@ -143,9 +152,9 @@ export default function Landing() {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to="/register" className="btn-flame text-base px-8 py-4 animate-pulse-glow">
-              Start Ordering →
-            </Link>
+            <button onClick={startDemo} className="btn-flame text-base px-8 py-4 animate-pulse-glow">
+              Let's Go →
+            </button>
             <Link to="/login" className="btn-outline text-base px-8 py-4">
               Sign In
             </Link>
@@ -236,9 +245,9 @@ export default function Landing() {
               Ready to eat better?
             </h2>
             <p className="text-ash mb-8">Join thousands of students who pre-order daily</p>
-            <Link to="/register" className="btn-flame text-base px-10 py-4 inline-block">
-              Create Free Account
-            </Link>
+            <button onClick={startDemo} className="btn-flame text-base px-10 py-4 inline-block">
+              Explore Demo Menu
+            </button>
           </div>
         </motion.div>
       </section>
