@@ -14,11 +14,10 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// If token expired (401), clear storage and redirect to login
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && localStorage.getItem("qb_token") !== "demo_token") {
       localStorage.removeItem("qb_token");
       window.location.href = "/login";
     }

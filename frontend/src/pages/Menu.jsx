@@ -97,12 +97,9 @@ export default function Menu() {
 
   const DEMO_ITEMS = [
     { id: 1, name: 'Chicken Fried Rice', price: 350, category: 'Rice', image_url: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=400' },
-    { id: 2, name: 'Beef Kottu', price: 420, category: 'FastFood', image_url: 'https://images.unsplash.com/photo-1544025162-811cce66eb5f?auto=format&fit=crop&q=80&w=400' },
     { id: 3, name: 'Vegetable Noodles', price: 280, category: 'Noodles', image_url: 'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=80&w=400' },
-    { id: 4, name: 'Fish Curry Rice', price: 390, category: 'Rice', image_url: 'https://images.unsplash.com/photo-1589302168068-964664d93cb0?auto=format&fit=crop&q=80&w=400' },
     { id: 5, name: 'Egg Sandwich', price: 120, category: 'Snacks', image_url: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&q=80&w=400' },
     { id: 6, name: 'Mango Juice', price: 80, category: 'Drinks', image_url: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
-    { id: 7, name: 'Dhal Curry Plate', price: 220, category: 'Rice', image_url: 'https://images.unsplash.com/photo-1627883216892-0b73df727aa4?auto=format&fit=crop&q=80&w=400' },
     { id: 8, name: 'Chicken Burger', price: 480, category: 'FastFood', image_url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400' },
   ]
 

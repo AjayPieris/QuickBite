@@ -61,7 +61,7 @@ const pillStyle = (scrolled) => ({
 });
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const { totalItems } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [dropdown, setDropdown] = useState(false);
@@ -90,8 +90,16 @@ export default function Navbar() {
   }, [location]);
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    localStorage.removeItem("qb_token");
+    localStorage.removeItem("qb_cart");
+    window.location.href = "/welcome";
+  };
+
+  const handleDemoLogin = () => {
+    localStorage.setItem("qb_token", "demo_token");
+    setUser({ id: 999, name: "Demo User", role: "user" });
+    navigate("/");
+    setMobileOpen(false);
   };
 
   const navLinks = user
@@ -333,7 +341,7 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              <Link to="/register" className="hidden md:block">
+              <button onClick={handleDemoLogin} className="hidden md:block">
                 <motion.div
                   whileHover={{ y: -1, boxShadow: neumorphic.buttonRaised.boxShadow.replace('0.3', '0.45') }}
                   whileTap={{ scale: 0.96 }}
@@ -342,7 +350,7 @@ export default function Navbar() {
                 >
                   <Zap size={14} fill="currentColor" /> Let's Go
                 </motion.div>
-              </Link>
+              </button>
             )}
 
             {/* Mobile hamburger */}
@@ -471,15 +479,15 @@ export default function Navbar() {
 
               {/* Get started for guests */}
               {!user && (
-                <Link to="/register" className="mt-2 block">
+                <button onClick={handleDemoLogin} className="mt-2 block w-full">
                   <motion.div
                     whileTap={{ scale: 0.96 }}
                     className="flex items-center justify-center gap-2 px-5 py-4 rounded-[20px] text-[15px] font-bold"
                     style={neumorphic.buttonRaised}
                   >
-                    <Zap size={16} strokeWidth={2.5} fill="currentColor" /> Join QuickBite
+                    <Zap size={16} strokeWidth={2.5} fill="currentColor" /> Let's Go
                   </motion.div>
-                </Link>
+                </button>
               )}
             </motion.div>
           </>

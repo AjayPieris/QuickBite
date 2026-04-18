@@ -94,7 +94,11 @@ export default function Register() {
       })
       navigate('/login')
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.')
+      if (!err.response) {
+        navigate('/login')
+      } else {
+        setError(err.response?.data?.detail || 'Registration failed. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
